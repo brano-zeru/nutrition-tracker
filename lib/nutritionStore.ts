@@ -25,6 +25,16 @@ export const initialSavedFoods: SavedFood[] = [
 ]
 
 // Sample historical data for demonstration
+// Using fixed values to avoid hydration mismatches (no Math.random())
+const sampleDayData = [
+  { breakfast: 320, lunch: 480, dinner: 620, snack: 150 },
+  { breakfast: 290, lunch: 520, dinner: 580, snack: 180 },
+  { breakfast: 350, lunch: 450, dinner: 650, snack: 120 },
+  { breakfast: 280, lunch: 500, dinner: 700, snack: 200 },
+  { breakfast: 310, lunch: 470, dinner: 550, snack: 160 },
+  { breakfast: 340, lunch: 510, dinner: 620, snack: 140 },
+]
+
 export function generateSampleData(): Record<string, DailyLog> {
   const data: Record<string, DailyLog> = {}
   const today = new Date()
@@ -33,6 +43,7 @@ export function generateSampleData(): Record<string, DailyLog> {
   for (let i = 6; i >= 0; i--) {
     const date = new Date(today)
     date.setDate(date.getDate() - i)
+    date.setHours(0, 0, 0, 0) // Normalize to midnight to avoid time-based mismatches
     const dateStr = getDateString(date)
     
     const entries: FoodEntry[] = []
@@ -40,13 +51,18 @@ export function generateSampleData(): Record<string, DailyLog> {
     // Add sample entries
     if (i === 0) {
       // Today - fewer entries
+      const breakfastTime = new Date(date)
+      breakfastTime.setHours(8, 30, 0, 0)
+      const lunchTime = new Date(date)
+      lunchTime.setHours(12, 30, 0, 0)
+      
       entries.push({
         id: `${dateStr}-1`,
         name: 'Oatmeal with banana',
         calories: 320,
         protein: 12,
         notes: 'Breakfast',
-        timestamp: new Date(date.setHours(8, 30)),
+        timestamp: breakfastTime,
       })
       entries.push({
         id: `${dateStr}-2`,
@@ -54,46 +70,52 @@ export function generateSampleData(): Record<string, DailyLog> {
         calories: 450,
         protein: 35,
         notes: 'Lunch',
-        timestamp: new Date(date.setHours(12, 30)),
+        timestamp: lunchTime,
       })
     } else {
-      // Past days - full data
-      const breakfastCal = 250 + Math.floor(Math.random() * 150)
-      const lunchCal = 400 + Math.floor(Math.random() * 200)
-      const dinnerCal = 500 + Math.floor(Math.random() * 300)
-      const snackCal = 100 + Math.floor(Math.random() * 150)
+      // Past days - use fixed sample data
+      const dayData = sampleDayData[i - 1] || sampleDayData[0]
+      
+      const breakfastTime = new Date(date)
+      breakfastTime.setHours(8, 0, 0, 0)
+      const lunchTime = new Date(date)
+      lunchTime.setHours(12, 30, 0, 0)
+      const snackTime = new Date(date)
+      snackTime.setHours(15, 30, 0, 0)
+      const dinnerTime = new Date(date)
+      dinnerTime.setHours(19, 0, 0, 0)
       
       entries.push({
         id: `${dateStr}-1`,
         name: 'Breakfast',
-        calories: breakfastCal,
-        protein: Math.floor(breakfastCal * 0.15 / 4),
+        calories: dayData.breakfast,
+        protein: Math.floor(dayData.breakfast * 0.15 / 4),
         notes: '',
-        timestamp: new Date(date.setHours(8, 0)),
+        timestamp: breakfastTime,
       })
       entries.push({
         id: `${dateStr}-2`,
         name: 'Lunch',
-        calories: lunchCal,
-        protein: Math.floor(lunchCal * 0.25 / 4),
+        calories: dayData.lunch,
+        protein: Math.floor(dayData.lunch * 0.25 / 4),
         notes: '',
-        timestamp: new Date(date.setHours(12, 30)),
+        timestamp: lunchTime,
       })
       entries.push({
         id: `${dateStr}-3`,
         name: 'Dinner',
-        calories: dinnerCal,
-        protein: Math.floor(dinnerCal * 0.3 / 4),
+        calories: dayData.dinner,
+        protein: Math.floor(dayData.dinner * 0.3 / 4),
         notes: '',
-        timestamp: new Date(date.setHours(19, 0)),
+        timestamp: dinnerTime,
       })
       entries.push({
         id: `${dateStr}-4`,
         name: 'Snack',
-        calories: snackCal,
-        protein: Math.floor(snackCal * 0.1 / 4),
+        calories: dayData.snack,
+        protein: Math.floor(dayData.snack * 0.1 / 4),
         notes: '',
-        timestamp: new Date(date.setHours(15, 30)),
+        timestamp: snackTime,
       })
     }
     

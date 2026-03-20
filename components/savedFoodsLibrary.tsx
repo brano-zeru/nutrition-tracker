@@ -1,8 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { useNutrition } from '@/lib/nutrition-context'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { useNutrition } from '@/lib/nutritionContext'
+import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -71,20 +71,21 @@ export function SavedFoodsLibrary() {
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <Button variant="outline" className="gap-2 border-border/50">
-          <BookOpen className="h-4 w-4" />
-          Food Library
+        <Button variant="outline" className="gap-1.5 sm:gap-2 border-border/50 text-xs sm:text-sm h-8 sm:h-9 px-2 sm:px-4">
+          <BookOpen className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+          <span className="hidden sm:inline">Food Library</span>
+          <span className="sm:hidden">Library</span>
         </Button>
       </SheetTrigger>
       <SheetContent className="w-full sm:max-w-md bg-card border-border p-0">
-        <SheetHeader className="p-6 pb-4">
-          <SheetTitle className="flex items-center gap-2">
-            <BookOpen className="h-5 w-5 text-primary" />
+        <SheetHeader className="p-4 sm:p-6 pb-3 sm:pb-4">
+          <SheetTitle className="flex items-center gap-2 text-base sm:text-lg">
+            <BookOpen className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
             Saved Foods Library
           </SheetTitle>
         </SheetHeader>
         
-        <div className="px-6 pb-4">
+        <div className="px-4 sm:px-6 pb-3 sm:pb-4">
           <div className="flex gap-2">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -92,21 +93,21 @@ export function SavedFoodsLibrary() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search foods..."
-                className="pl-10 bg-input border-border"
+                className="pl-10 bg-input border-border text-sm"
               />
             </div>
             <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
               <DialogTrigger asChild>
-                <Button size="icon" className="bg-primary text-primary-foreground shrink-0">
+                <Button size="icon" className="bg-primary text-primary-foreground shrink-0 h-9 w-9 sm:h-10 sm:w-10">
                   <Plus className="h-4 w-4" />
                 </Button>
               </DialogTrigger>
-              <DialogContent className="bg-card border-border">
+              <DialogContent className="bg-card border-border max-w-[calc(100%-2rem)] sm:max-w-md">
                 <DialogHeader>
                   <DialogTitle>Add New Food</DialogTitle>
                 </DialogHeader>
                 <form onSubmit={handleAddNewFood}>
-                  <FieldGroup className="gap-4">
+                  <FieldGroup className="gap-3 sm:gap-4">
                     <Field>
                       <FieldLabel>Food Name</FieldLabel>
                       <Input
@@ -117,7 +118,7 @@ export function SavedFoodsLibrary() {
                         required
                       />
                     </Field>
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-2 gap-3 sm:gap-4">
                       <Field>
                         <FieldLabel>Calories / 100g</FieldLabel>
                         <Input
@@ -142,7 +143,7 @@ export function SavedFoodsLibrary() {
                       </Field>
                     </div>
                   </FieldGroup>
-                  <DialogFooter className="mt-6">
+                  <DialogFooter className="mt-4 sm:mt-6">
                     <DialogClose asChild>
                       <Button variant="outline" type="button">Cancel</Button>
                     </DialogClose>
@@ -156,7 +157,7 @@ export function SavedFoodsLibrary() {
           </div>
         </div>
         
-        <ScrollArea className="h-[calc(100vh-180px)] px-6">
+        <ScrollArea className="h-[calc(100vh-160px)] sm:h-[calc(100vh-180px)] px-4 sm:px-6">
           <div className="space-y-2 pb-6">
             {filteredFoods.length === 0 ? (
               <div className="text-center py-8">
@@ -169,27 +170,27 @@ export function SavedFoodsLibrary() {
                   className="border-border/50 bg-secondary/30 hover:bg-secondary/50 transition-colors cursor-pointer"
                   onClick={() => handleQuickAdd(food)}
                 >
-                  <CardContent className="p-4 flex items-center justify-between">
-                    <div className="flex-1">
-                      <p className="font-medium">{food.name}</p>
-                      <p className="text-sm text-muted-foreground">
+                  <CardContent className="p-3 sm:p-4 flex items-center justify-between">
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium text-sm sm:text-base truncate">{food.name}</p>
+                      <p className="text-xs sm:text-sm text-muted-foreground">
                         <span className="text-calories">{food.caloriesPer100g} cal</span>
-                        {' · '}
-                        <span className="text-protein">{food.proteinPer100g}g protein</span>
-                        <span className="text-muted-foreground"> / 100g</span>
+                        {' / '}
+                        <span className="text-protein">{food.proteinPer100g}g</span>
+                        <span className="text-muted-foreground"> per 100g</span>
                       </p>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1 sm:gap-2 shrink-0">
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                        className="h-7 w-7 sm:h-8 sm:w-8 text-muted-foreground hover:text-destructive"
                         onClick={(e) => {
                           e.stopPropagation()
                           removeSavedFood(food.id)
                         }}
                       >
-                        <Trash2 className="h-4 w-4" />
+                        <Trash2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                       </Button>
                       <ChevronRight className="h-4 w-4 text-muted-foreground" />
                     </div>
@@ -202,11 +203,11 @@ export function SavedFoodsLibrary() {
         
         {/* Quick Add Dialog */}
         <Dialog open={!!selectedFood} onOpenChange={() => setSelectedFood(null)}>
-          <DialogContent className="bg-card border-border">
+          <DialogContent className="bg-card border-border max-w-[calc(100%-2rem)] sm:max-w-md">
             <DialogHeader>
-              <DialogTitle>Add {selectedFood?.name}</DialogTitle>
+              <DialogTitle className="text-base sm:text-lg">Add {selectedFood?.name}</DialogTitle>
             </DialogHeader>
-            <FieldGroup className="gap-4">
+            <FieldGroup className="gap-3 sm:gap-4">
               <Field>
                 <FieldLabel>Amount (grams)</FieldLabel>
                 <Input
@@ -218,9 +219,9 @@ export function SavedFoodsLibrary() {
                 />
               </Field>
               {selectedFood && grams && (
-                <div className="bg-secondary/50 rounded-lg p-4">
-                  <p className="text-sm text-muted-foreground mb-2">This will add:</p>
-                  <div className="flex justify-between">
+                <div className="bg-secondary/50 rounded-lg p-3 sm:p-4">
+                  <p className="text-xs sm:text-sm text-muted-foreground mb-2">This will add:</p>
+                  <div className="flex justify-between text-sm">
                     <span className="text-calories font-medium">
                       {Math.round((selectedFood.caloriesPer100g * parseInt(grams || '0')) / 100)} cal
                     </span>

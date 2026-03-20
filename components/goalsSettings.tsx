@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useNutrition } from '@/lib/nutrition-context'
+import { useNutrition } from '@/lib/nutritionContext'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -46,19 +46,19 @@ export function GoalsSettings() {
   return (
     <Dialog open={isOpen} onOpenChange={handleOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="icon" className="border-border/50">
-          <Settings className="h-4 w-4" />
+        <Button variant="outline" size="icon" className="border-border/50 h-8 w-8 sm:h-9 sm:w-9">
+          <Settings className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
         </Button>
       </DialogTrigger>
-      <DialogContent className="bg-card border-border">
+      <DialogContent className="bg-card border-border max-w-[calc(100%-2rem)] sm:max-w-md">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Target className="h-5 w-5 text-primary" />
+          <DialogTitle className="flex items-center gap-2 text-base sm:text-lg">
+            <Target className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
             Daily Goals
           </DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
-          <FieldGroup className="gap-4">
+          <FieldGroup className="gap-3 sm:gap-4">
             <Field>
               <FieldLabel>Daily Calorie Goal</FieldLabel>
               <Input
@@ -68,7 +68,7 @@ export function GoalsSettings() {
                 placeholder="2000"
                 className="bg-input border-border"
               />
-              <p className="text-xs text-muted-foreground mt-1">
+              <p className="text-[10px] sm:text-xs text-muted-foreground mt-1">
                 Recommended: 1600-2400 for women, 2000-3000 for men
               </p>
             </Field>
@@ -81,12 +81,12 @@ export function GoalsSettings() {
                 placeholder="150"
                 className="bg-input border-border"
               />
-              <p className="text-xs text-muted-foreground mt-1">
+              <p className="text-[10px] sm:text-xs text-muted-foreground mt-1">
                 Recommended: 0.8-1g per pound of body weight for active individuals
               </p>
             </Field>
           </FieldGroup>
-          <DialogFooter className="mt-6">
+          <DialogFooter className="mt-4 sm:mt-6">
             <DialogClose asChild>
               <Button variant="outline" type="button">Cancel</Button>
             </DialogClose>

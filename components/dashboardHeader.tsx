@@ -1,9 +1,9 @@
 'use client'
 
-import { useNutrition } from '@/lib/nutrition-context'
+import { useNutrition } from '@/lib/nutritionContext'
 import { Button } from '@/components/ui/button'
 import { ChevronLeft, ChevronRight, Calendar } from 'lucide-react'
-import { getDateString } from '@/lib/nutrition-store'
+import { getDateString } from '@/lib/nutritionStore'
 
 export function DashboardHeader() {
   const { selectedDate, setSelectedDate } = useNutrition()
@@ -33,7 +33,7 @@ export function DashboardHeader() {
     if (getDateString(date) === getDateString(yesterday)) return 'Yesterday'
     
     return date.toLocaleDateString('en-US', {
-      weekday: 'long',
+      weekday: 'short',
       month: 'short',
       day: 'numeric',
     })
@@ -41,19 +41,19 @@ export function DashboardHeader() {
   
   return (
     <div className="flex items-center justify-between">
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-1.5 sm:gap-3">
         <Button
           variant="ghost"
           size="icon"
           onClick={goToPreviousDay}
-          className="h-9 w-9 text-muted-foreground hover:text-foreground"
+          className="h-8 w-8 sm:h-9 sm:w-9 text-muted-foreground hover:text-foreground"
         >
-          <ChevronLeft className="h-5 w-5" />
+          <ChevronLeft className="h-4 w-4 sm:h-5 sm:w-5" />
         </Button>
         
-        <div className="flex items-center gap-2">
-          <Calendar className="h-5 w-5 text-muted-foreground" />
-          <span className="text-lg font-medium">{formatDate(selectedDate)}</span>
+        <div className="flex items-center gap-1.5 sm:gap-2">
+          <Calendar className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
+          <span className="text-sm sm:text-lg font-medium">{formatDate(selectedDate)}</span>
         </div>
         
         <Button
@@ -61,9 +61,9 @@ export function DashboardHeader() {
           size="icon"
           onClick={goToNextDay}
           disabled={isToday}
-          className="h-9 w-9 text-muted-foreground hover:text-foreground disabled:opacity-30"
+          className="h-8 w-8 sm:h-9 sm:w-9 text-muted-foreground hover:text-foreground disabled:opacity-30"
         >
-          <ChevronRight className="h-5 w-5" />
+          <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5" />
         </Button>
       </div>
       
@@ -72,7 +72,7 @@ export function DashboardHeader() {
           variant="outline"
           size="sm"
           onClick={goToToday}
-          className="text-xs"
+          className="text-[10px] sm:text-xs h-7 sm:h-8 px-2 sm:px-3"
         >
           Go to Today
         </Button>

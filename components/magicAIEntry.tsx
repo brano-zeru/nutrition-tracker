@@ -75,35 +75,35 @@ export function MagicAIEntry({ onParsedEntry }: MagicAIEntryProps) {
   
   return (
     <Card className="border-border/50 bg-gradient-to-r from-primary/5 to-accent/5 border-primary/20">
-      <CardContent className="p-4">
-        <form onSubmit={handleSubmit} className="flex gap-3">
+      <CardContent className="p-3 sm:p-4">
+        <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-2 sm:gap-3">
           <div className="relative flex-1">
             <Sparkles className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-primary" />
             <Input
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder={'Try "2 eggs and tuna" or "chicken with rice"...'}
-              className="pl-10 bg-background/50 border-border/50 focus-visible:ring-primary/50"
+              placeholder={'Try "2 eggs and tuna"...'}
+              className="pl-10 bg-background/50 border-border/50 focus-visible:ring-primary/50 text-sm"
               disabled={isProcessing}
             />
           </div>
           <Button
             type="submit"
             disabled={!input.trim() || isProcessing}
-            className="bg-primary text-primary-foreground hover:bg-primary/90"
+            className="bg-primary text-primary-foreground hover:bg-primary/90 shrink-0"
           >
             {isProcessing ? (
               <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
               <>
-                <Sparkles className="h-4 w-4 mr-2" />
-                Quick Add
+                <Sparkles className="h-4 w-4 sm:mr-2" />
+                <span className="hidden sm:inline">Quick Add</span>
               </>
             )}
           </Button>
         </form>
-        <p className="text-xs text-muted-foreground mt-2 ml-1">
-          Magic AI Entry - Type natural language to log foods instantly
+        <p className="text-[10px] sm:text-xs text-muted-foreground mt-2 ml-1">
+          Magic AI Entry - Type natural language to log foods
         </p>
       </CardContent>
     </Card>

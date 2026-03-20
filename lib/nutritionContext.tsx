@@ -7,7 +7,7 @@ import {
   generateSampleData, 
   getDateString, 
   defaultGoals 
-} from './nutrition-store'
+} from './nutritionStore'
 
 interface NutritionContextType {
   // Current date
@@ -21,6 +21,7 @@ interface NutritionContextType {
   // Food entries
   addFoodEntry: (entry: Omit<FoodEntry, 'id' | 'timestamp'>) => void
   removeFoodEntry: (entryId: string) => void
+  updateFoodEntry: (entryId: string, updates: Partial<Omit<FoodEntry, 'id' | 'timestamp'>>) => void
   
   // Saved foods
   savedFoods: SavedFood[]
@@ -36,6 +37,7 @@ interface NutritionContextType {
   getTotalCalories: (date?: Date) => number
   getTotalProtein: (date?: Date) => number
   getWeeklyStats: () => { date: string; calories: number; protein: number }[]
+  getTopFoods: () => { name: string; count: number; calories: number }[]
 }
 
 const NutritionContext = createContext<NutritionContextType | null>(null)
@@ -94,6 +96,25 @@ export function NutritionProvider({ children }: { children: React.ReactNode }) {
         [dateStr]: {
           ...currentLog,
           entries: currentLog.entries.filter(e => e.id !== entryId),
+        },
+      }
+    })
+  }, [selectedDate])
+  
+  const updateFoodEntry = useCallback((entryId: string, updates: Partial<Omit<FoodEntry, 'id' | 'timestamp'>>) => {
+    const dateStr = getDateString(selectedDate)
+    
+    setDailyLogs(prev => {
+      const currentLog = prev[dateStr]
+      if (!currentLog) return prev
+      
+      return {
+        ...prev,
+        [dateStr]: {
+          ...currentLog,
+          entries: currentLog.entries.map(e => 
+            e.id === entryId ? { ...e, ...updates } : e
+          ),
         },
       }
     })
@@ -163,6 +184,34 @@ export function NutritionProvider({ children }: { children: React.ReactNode }) {
     return stats
   }, [dailyLogs])
   
+  const getTopFoods = useCallback(() => {
+    const foodCounts: Record<string, { count: number; totalCalories: number }> = {}
+    
+    // Go through all logs
+    Object.values(dailyLogs).forEach(log => {
+      log.entries.forEach(entry => {
+        // Normalize name - remove quantity info in parentheses
+        const baseName = entry.name.replace(/\s*\([^)]*\)\s*/g, '').trim()
+        
+        if (!foodCounts[baseName]) {
+          foodCounts[baseName] = { count: 0, totalCalories: 0 }
+        }
+        foodCounts[baseName].count += 1
+        foodCounts[baseName].totalCalories += entry.calories
+      })
+    })
+    
+    // Convert to array and sort by count
+    return Object.entries(foodCounts)
+      .map(([name, data]) => ({
+        name,
+        count: data.count,
+        calories: Math.round(data.totalCalories / data.count), // average calories per serving
+      }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 10)
+  }, [dailyLogs])
+  
   const value = useMemo(() => ({
     selectedDate,
     setSelectedDate,
@@ -170,6 +219,7 @@ export function NutritionProvider({ children }: { children: React.ReactNode }) {
     getCurrentDayLog,
     addFoodEntry,
     removeFoodEntry,
+    updateFoodEntry,
     savedFoods,
     addSavedFood,
     removeSavedFood,
@@ -179,12 +229,14 @@ export function NutritionProvider({ children }: { children: React.ReactNode }) {
     getTotalCalories,
     getTotalProtein,
     getWeeklyStats,
+    getTopFoods,
   }), [
     selectedDate,
     dailyLogs,
     getCurrentDayLog,
     addFoodEntry,
     removeFoodEntry,
+    updateFoodEntry,
     savedFoods,
     addSavedFood,
     removeSavedFood,
@@ -194,6 +246,7 @@ export function NutritionProvider({ children }: { children: React.ReactNode }) {
     getTotalCalories,
     getTotalProtein,
     getWeeklyStats,
+    getTopFoods,
   ])
   
   return (
