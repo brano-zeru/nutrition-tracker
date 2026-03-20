@@ -42,6 +42,25 @@ export function HistoryLog() {
     return date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })
   }
   
+  // Don't render dynamic content until mounted to avoid hydration mismatch
+  if (!mounted) {
+    return (
+      <Card className="border-border/50 bg-card h-fit">
+        <CardHeader className="pb-3 sm:pb-4">
+          <CardTitle className="text-base sm:text-lg font-medium flex items-center gap-2">
+            <Calendar className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
+            History
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="p-0">
+          <div className="h-[320px] sm:h-[380px] flex items-center justify-center">
+            <p className="text-sm text-muted-foreground">Loading...</p>
+          </div>
+        </CardContent>
+      </Card>
+    )
+  }
+  
   return (
     <Card className="border-border/50 bg-card h-fit">
       <CardHeader className="pb-3 sm:pb-4">

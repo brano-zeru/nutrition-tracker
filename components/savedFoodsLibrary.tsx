@@ -20,6 +20,7 @@ import {
   SheetContent,
   SheetHeader,
   SheetTitle,
+  SheetDescription,
   SheetTrigger,
 } from '@/components/ui/sheet'
 import { ScrollArea } from '@/components/ui/scroll-area'
@@ -84,6 +85,9 @@ export function SavedFoodsLibrary() {
             <BookOpen className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
             Saved Foods Library
           </SheetTitle>
+          <SheetDescription>
+            Search and add foods from your saved library to today&apos;s log.
+          </SheetDescription>
         </SheetHeader>
         
         <div className="px-4 sm:px-6 pb-3 sm:pb-4">

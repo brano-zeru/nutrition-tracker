@@ -1,12 +1,12 @@
 'use client'
 
-import React, { createContext, useContext, useState, useCallback, useMemo } from 'react'
+import React, { createContext, useContext, useState, useCallback, useMemo, useEffect } from 'react'
 import { FoodEntry, SavedFood, DailyLog, NutritionGoals } from './types'
-import { 
-  initialSavedFoods, 
-  generateSampleData, 
-  getDateString, 
-  defaultGoals 
+import {
+  initialSavedFoods,
+  generateSampleData,
+  getDateString,
+  defaultGoals
 } from './nutritionStore'
 
 interface NutritionContextType {
@@ -43,10 +43,19 @@ interface NutritionContextType {
 const NutritionContext = createContext<NutritionContextType | null>(null)
 
 export function NutritionProvider({ children }: { children: React.ReactNode }) {
-  const [selectedDate, setSelectedDate] = useState<Date>(new Date())
-  const [dailyLogs, setDailyLogs] = useState<Record<string, DailyLog>>(generateSampleData)
+  // Initialize with empty state to avoid hydration mismatch
+  // The actual data is loaded on the client side in useEffect
+  const [mounted, setMounted] = useState(false)
+  const [selectedDate, setSelectedDate] = useState<Date>(() => new Date())
+  const [dailyLogs, setDailyLogs] = useState<Record<string, DailyLog>>({})
   const [savedFoods, setSavedFoods] = useState<SavedFood[]>(initialSavedFoods)
   const [goals, setGoals] = useState<NutritionGoals>(defaultGoals)
+  
+  // Load sample data on client side only
+  useEffect(() => {
+    setDailyLogs(generateSampleData())
+    setMounted(true)
+  }, [])
   
   const getCurrentDayLog = useCallback((): DailyLog => {
     const dateStr = getDateString(selectedDate)
