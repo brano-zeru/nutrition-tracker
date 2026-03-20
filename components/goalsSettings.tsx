@@ -9,6 +9,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
   DialogTrigger,
   DialogFooter,
   DialogClose,
@@ -56,6 +57,7 @@ export function GoalsSettings() {
             <Target className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
             Daily Goals
           </DialogTitle>
+          <DialogDescription>Set your daily calorie and protein targets.</DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
           <FieldGroup className="gap-3 sm:gap-4">

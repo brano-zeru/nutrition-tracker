@@ -1,5 +1,6 @@
 'use client'
 
+import { useState, useEffect, useMemo } from 'react'
 import { useNutrition } from '@/lib/nutritionContext'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -10,25 +11,29 @@ import { cn } from '@/lib/utils'
 
 export function HistoryLog() {
   const { dailyLogs, setSelectedDate, selectedDate, goals } = useNutrition()
+  const [mounted, setMounted] = useState(false)
   
-  // Get last 14 days
-  const getLast14Days = () => {
-    const days: { date: Date; dateStr: string }[] = []
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+  
+  // Memoize the days array to avoid recalculating on every render
+  const days = useMemo(() => {
+    const result: { date: Date; dateStr: string }[] = []
     const today = new Date()
+    today.setHours(0, 0, 0, 0) // Normalize to midnight
     
     for (let i = 0; i < 14; i++) {
       const date = new Date(today)
       date.setDate(date.getDate() - i)
-      days.push({
+      result.push({
         date,
         dateStr: getDateString(date),
       })
     }
     
-    return days
-  }
-  
-  const days = getLast14Days()
+    return result
+  }, [mounted]) // Re-run only when mounted changes
   const selectedDateStr = getDateString(selectedDate)
   
   const formatDayLabel = (date: Date, index: number) => {

@@ -11,6 +11,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
   DialogTrigger,
   DialogFooter,
   DialogClose,
@@ -98,6 +99,7 @@ export function FoodLog() {
           <DialogContent className="bg-card border-border max-w-[calc(100%-2rem)] sm:max-w-lg mx-auto">
             <DialogHeader>
               <DialogTitle>Add Food Entry</DialogTitle>
+              <DialogDescription>Log a new food item with calories and protein.</DialogDescription>
             </DialogHeader>
             <form onSubmit={handleSubmit}>
               <FieldGroup className="gap-3 sm:gap-4">
@@ -282,6 +284,7 @@ export function FoodLog() {
         <DialogContent className="bg-card border-border max-w-[calc(100%-2rem)] sm:max-w-md mx-auto">
           <DialogHeader>
             <DialogTitle>Add Again: {duplicateEntry?.name}</DialogTitle>
+            <DialogDescription>Add this food again with an optional portion multiplier.</DialogDescription>
           </DialogHeader>
           <FieldGroup className="gap-4">
             <Field>

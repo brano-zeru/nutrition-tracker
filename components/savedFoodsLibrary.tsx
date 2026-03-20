@@ -10,6 +10,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
   DialogTrigger,
   DialogFooter,
   DialogClose,
@@ -105,6 +106,7 @@ export function SavedFoodsLibrary() {
               <DialogContent className="bg-card border-border max-w-[calc(100%-2rem)] sm:max-w-md">
                 <DialogHeader>
                   <DialogTitle>Add New Food</DialogTitle>
+                  <DialogDescription>Save a new food to your library for quick access.</DialogDescription>
                 </DialogHeader>
                 <form onSubmit={handleAddNewFood}>
                   <FieldGroup className="gap-3 sm:gap-4">
@@ -206,6 +208,7 @@ export function SavedFoodsLibrary() {
           <DialogContent className="bg-card border-border max-w-[calc(100%-2rem)] sm:max-w-md">
             <DialogHeader>
               <DialogTitle className="text-base sm:text-lg">Add {selectedFood?.name}</DialogTitle>
+              <DialogDescription>Specify the amount in grams to add to today&apos;s log.</DialogDescription>
             </DialogHeader>
             <FieldGroup className="gap-3 sm:gap-4">
               <Field>
