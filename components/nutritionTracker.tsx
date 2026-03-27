@@ -1,33 +1,39 @@
 'use client'
 
-import { useState } from 'react'
-import { NutritionProvider, useNutrition } from '@/lib/nutritionContext'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { DashboardHeader } from '@/components/dashboardHeader'
-import { DailyProgress } from '@/components/dailyProgress'
-import { MagicAIEntry } from '@/components/magicAIEntry'
-import { FoodLog } from '@/components/foodLog'
-import { SavedFoodsLibrary } from '@/components/savedFoodsLibrary'
-import { HistoryLog } from '@/components/historyLog'
-import { WeeklyStats } from '@/components/weeklyStats'
 import { GoalsSettings } from '@/components/goalsSettings'
-import { Apple, BarChart3, History } from 'lucide-react'
+import { SavedFoodsLibrary } from '@/components/savedFoodsLibrary'
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { NutritionProvider, useNutrition } from '@/lib/nutritionContext'
+import { Apple, BarChart3, History as HistoryIcon, Icon } from 'lucide-react'
+import { useMemo, useState } from 'react'
+import { Dashboard, History, Stats } from './pages'
+import { Tab, tabKeys } from '@/types'
+import { TabsContent } from '@radix-ui/react-tabs'
 
 function TrackerContent() {
-  const { addFoodEntry } = useNutrition()
   const [activeTab, setActiveTab] = useState('dashboard')
   
-  const handleAIParsedEntry = (entries: { name: string; calories: number; protein: number }[]) => {
-    entries.forEach(entry => {
-      addFoodEntry({
-        name: entry.name,
-        calories: entry.calories,
-        protein: entry.protein,
-        notes: 'Added via Magic AI',
-      })
-    })
-  }
-  
+  const tabs: Tab[] = useMemo(() => [
+      {
+        key: tabKeys.DASHBOARD,
+        icon: <Apple className="h-4 w-4 sm:mr-2" />,
+        pageComponent: <Dashboard/>,
+        classNames: 'space-y-4 sm:space-y-6 mt-4 sm:mt-6'
+      },
+      {
+        key: tabKeys.HISTORY,
+        icon: <HistoryIcon className="h-4 w-4 sm:mr-2" />,
+        pageComponent: <History />,
+        classNames: 'mt-4 sm:mt-6'
+      },
+      {
+        key: tabKeys.STATISTICS,
+        icon: <BarChart3 className="h-4 w-4 sm:mr-2" />,
+        pageComponent: <Stats />,
+        classNames: 'mt-4 sm:mt-6'
+      }
+  ], [])
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -55,65 +61,23 @@ function TrackerContent() {
       <main className="container max-w-6xl mx-auto px-3 sm:px-4 py-4 sm:py-6">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4 sm:space-y-6">
           <TabsList className="bg-secondary/50 border border-border/50 p-1 w-full sm:w-auto grid grid-cols-3 sm:inline-flex">
-            <TabsTrigger 
-              value="dashboard" 
-              className="data-[state=active]:bg-card data-[state=active]:text-foreground text-xs sm:text-sm px-2 sm:px-4"
-            >
-              <Apple className="h-4 w-4 sm:mr-2" />
-              <span className="hidden sm:inline">Dashboard</span>
-            </TabsTrigger>
-            <TabsTrigger 
-              value="history"
-              className="data-[state=active]:bg-card data-[state=active]:text-foreground text-xs sm:text-sm px-2 sm:px-4"
-            >
-              <History className="h-4 w-4 sm:mr-2" />
-              <span className="hidden sm:inline">History</span>
-            </TabsTrigger>
-            <TabsTrigger 
-              value="stats"
-              className="data-[state=active]:bg-card data-[state=active]:text-foreground text-xs sm:text-sm px-2 sm:px-4"
-            >
-              <BarChart3 className="h-4 w-4 sm:mr-2" />
-              <span className="hidden sm:inline">Stats</span>
-            </TabsTrigger>
+            {
+              tabs.map(({key, icon}) => 
+                  <TabsTrigger key={key} value={key} className="data-[state=active]:bg-card data-[state=active]:text-foreground text-xs sm:text-sm px-2 sm:px-4">
+                      {icon}
+                      <span className="hidden sm:inline">{key}</span>
+                  </TabsTrigger>
+              )
+            }
           </TabsList>
           
-          <TabsContent value="dashboard" className="space-y-4 sm:space-y-6 mt-4 sm:mt-6">
-            {/* Magic AI Entry */}
-            <MagicAIEntry onParsedEntry={handleAIParsedEntry} />
-            
-            {/* Date Navigation */}
-            <DashboardHeader />
-            
-            {/* Main Grid */}
-            <div className="grid lg:grid-cols-3 gap-4 sm:gap-6">
-              {/* Progress & Food Log */}
-              <div className="lg:col-span-2 space-y-4 sm:space-y-6">
-                <DailyProgress />
-                <FoodLog />
-              </div>
-              
-              {/* History Sidebar - hidden on mobile, shown in dedicated tab */}
-              <div className="hidden lg:block lg:col-span-1">
-                <HistoryLog />
-              </div>
-            </div>
-          </TabsContent>
-          
-          <TabsContent value="history" className="mt-4 sm:mt-6">
-            <div className="grid md:grid-cols-2 gap-4 sm:gap-6">
-              <HistoryLog />
-              <div className="space-y-4 sm:space-y-6">
-                <DashboardHeader />
-                <DailyProgress />
-                <FoodLog />
-              </div>
-            </div>
-          </TabsContent>
-          
-          <TabsContent value="stats" className="mt-4 sm:mt-6">
-            <WeeklyStats />
-          </TabsContent>
+          {
+              tabs.map(({key, classNames, pageComponent}) => 
+                  <TabsContent key={key} value={key} className={classNames} >
+                    {pageComponent}
+                  </TabsContent>
+              )
+          }
         </Tabs>
       </main>
       
