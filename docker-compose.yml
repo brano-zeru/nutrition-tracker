@@ -1,0 +1,15 @@
+services:
+  db:
+    image: postgres:15
+    container_name: nutrish-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: nutrish_local
+      POSTGRES_HOST_AUTH_METHOD: trust
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
