@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   // 1. חילוץ הטוקן מהעוגיות (אנחנו נגדיר אותו ב-Login API בהמשך)
   const token = request.cookies.get('auth-token')?.value;
   
