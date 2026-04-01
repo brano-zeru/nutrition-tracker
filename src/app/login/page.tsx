@@ -8,50 +8,72 @@ import { useRouter } from 'next/navigation';
 import { User } from '@prisma/client';
 
 const loginSchema = z.object({
-  email: z.string().email("Invalid email address"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
+    email: z.string().email('Invalid email address'),
+    password: z.string().min(6, 'Password must be at least 6 characters'),
 });
 
 type LoginFormData = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
-  const fields: { name: keyof LoginFormData; label: string; type: string; placeholder: string }[] = [
-    { name: 'email', label: 'Email Address', type: 'email', placeholder: 'name@example.com' },
-    { name: 'password', label: 'Password', type: 'password', placeholder: '••••••••' },
-  ];
+    const fields: {
+        name: keyof LoginFormData;
+        label: string;
+        type: string;
+        placeholder: string;
+    }[] = [
+        {
+            name: 'email',
+            label: 'Email Address',
+            type: 'email',
+            placeholder: 'name@example.com',
+        },
+        {
+            name: 'password',
+            label: 'Password',
+            type: 'password',
+            placeholder: '••••••••',
+        },
+    ];
 
-  const router = useRouter()
+    const router = useRouter();
 
-  const handleLogin = async (data: LoginFormData) => {
-      try {
-        const result = await fetchApi<{ message: string; user: any }>('/api/auth/login', 'POST', data);
-        
-        if (result.user) {
-          router.push('/dashboard');
+    const handleLogin = async (data: LoginFormData) => {
+        try {
+            const result = await fetchApi<{ message: string; user: any }>(
+                '/api/auth/login',
+                'POST',
+                data,
+            );
+
+            if (result.user) {
+                router.push('/dashboard');
+            }
+        } catch (err: unknown) {
+            console.error('Login failed:', (err as Error).message);
+            // You might want to show an error toast here
         }
-      } catch (err: unknown) {
-        console.error('Login failed:', (err as Error).message);
-        // You might want to show an error toast here
-      }
-  };
+    };
 
-  return (
-    <AuthForm
-      title="Nutrish"
-      description="Welcome back! Sign in to continue."
-      schema={loginSchema}
-      fields={fields}
-      onSubmit={handleLogin}
-      submitLabel="Sign In"
-      isSubmittingLabel="Signing in..."
-      linkElement={
-        <p>
-          {`Don't have an account? `}
-          <Link href="/register" className="text-emerald-500 hover:text-emerald-400 font-medium">
-            Sign up
-          </Link>
-        </p>
-      }
-    />
-  );
+    return (
+        <AuthForm
+            title="Nutrish"
+            description="Welcome back! Sign in to continue."
+            schema={loginSchema}
+            fields={fields}
+            onSubmit={handleLogin}
+            submitLabel="Sign In"
+            isSubmittingLabel="Signing in..."
+            linkElement={
+                <p>
+                    {`Don't have an account? `}
+                    <Link
+                        href="/register"
+                        className="text-emerald-500 hover:text-emerald-400 font-medium"
+                    >
+                        Sign up
+                    </Link>
+                </p>
+            }
+        />
+    );
 }

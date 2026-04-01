@@ -1,7 +1,7 @@
-import { NutritionTracker } from '@/components/nutritionTracker'
-import { redirect } from 'next/navigation'
+import { NutritionTracker } from '@/components/nutritionTracker';
+import { redirect } from 'next/navigation';
 
 export default function HomePage() {
-  // redirect('/login');
-  return <NutritionTracker />
+    // redirect('/login');
+    return <NutritionTracker />;
 }
