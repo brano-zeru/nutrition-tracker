@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { AuthService } from '@/services/auth.service';
+import { signToken } from '@/lib/auth';
+import { AUTH_COOKIE_NAME } from '@/consts';
 
 export async function POST(request: NextRequest) {
     try {
-        // 1. חילוץ הנתונים מגוף הבקשה
         const { email, password } = await request.json();
 
-        // 2. בדיקת תקינות בסיסית (Validation)
         if (!email || !password) {
             return NextResponse.json(
                 { error: 'Missing required fields' },
@@ -23,26 +23,30 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        // Create a simple token (in production, use JWT)
-        const token = Buffer.from(`${user.id}:${Date.now()}`).toString(
-            'base64',
-        );
+        const token = await signToken({
+            sub: user.id,
+            email: user.email,
+            fullName: user.fullName,
+            role: user.role,
+            iat: Math.floor(Date.now() / 1000),
+            exp: Math.floor(Date.now() / 1000) + 60 * 60 * 2,
+        });
 
         const response = NextResponse.json(
             { message: 'Login successful', user },
             { status: 200 },
         );
 
-        response.cookies.set('auth-token', token, {
+        response.cookies.set(AUTH_COOKIE_NAME, token, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'strict',
-            maxAge: 60 * 60 * 24 * 7, // 7 days
+            secure: true,
+            sameSite: 'lax',
+            maxAge: 60 * 60 * 2,
+            path: '/',
         });
 
         return response;
     } catch (error: any) {
-        // טיפול בשגיאות (למשל: משתמש כבר קיים)
         return NextResponse.json(
             { error: error.message || 'Internal Server Error' },
             { status: 500 },

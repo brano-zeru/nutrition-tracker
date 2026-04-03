@@ -1,3 +1,5 @@
+import { User as PrismaUser } from '@prisma/client';
+
 export interface FoodEntry {
     id: string;
     name: string;
@@ -39,4 +41,12 @@ export interface Tab {
     icon: ReactNode;
     pageComponent: ReactNode;
     classNames: string;
+}
+
+export type UserDTO = Pick<PrismaUser, 'id' | 'email' | 'role' | 'fullName'>;
+
+export interface AuthPayload extends Omit<UserDTO, 'id'> {
+    sub: UserDTO['id'];
+    iat: number;
+    exp: number;
 }

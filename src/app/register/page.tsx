@@ -5,6 +5,9 @@ import AuthForm from '@/components/auth/AuthForm';
 import Link from 'next/link';
 import { fetchApi } from '@/services/fetchApi';
 import { useRouter } from 'next/navigation';
+import { getRoute } from '@/utils';
+import { Pages } from '@/consts';
+import { UserDTO } from '@/types';
 
 const registerSchema = z.object({
     fullName: z.string().min(2, 'Full name is required'),
@@ -36,7 +39,7 @@ export default function RegisterPage() {
         {
             name: 'password',
             label: 'Password',
-            type: 'password',
+            type: 'text',
             placeholder: '••••••••',
         },
     ];
@@ -46,7 +49,7 @@ export default function RegisterPage() {
     const handleRegister = async (data: RegisterFormData) => {
         const { email, password, fullName } = data;
         try {
-            const response = await fetchApi<{ message: string; user: any }>(
+            const response = await fetchApi<{ message: string; user: UserDTO }>(
                 '/api/auth/register',
                 'POST',
                 {
@@ -57,7 +60,7 @@ export default function RegisterPage() {
             );
 
             if (response.user) {
-                router.push('/login');
+                router.push(getRoute(Pages.HOME));
             }
         } catch (error: unknown) {
             console.log('error: ', JSON.stringify((error as Error).message));
