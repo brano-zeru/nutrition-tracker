@@ -161,4 +161,5 @@ export function generateSampleData(): Record<string, DailyLog> {
 export const defaultGoals: NutritionGoals = {
     calorieGoal: 2000,
     proteinGoal: 150,
+    weightGoal: 100,
 };

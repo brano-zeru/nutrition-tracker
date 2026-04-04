@@ -81,7 +81,6 @@ export default function AuthForm<TFieldValues extends FieldValues>({
                                 }`}
                             />
 
-                            {/* השגיאה - תמיד תופסת מקום, עכשיו עם פונט קריא ומיקום בטוח */}
                             <div className="h-6 flex items-center px-1 transition-all duration-300">
                                 {errors[field.name] && (
                                     <span className="text-[11px] text-red-400 font-medium leading-none">

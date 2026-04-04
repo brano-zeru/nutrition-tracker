@@ -2,10 +2,8 @@
 
 import { useNutrition } from '@/contexts/nutritionContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Flame, Dumbbell, Scale } from 'lucide-react';
+import { Flame, Dumbbell } from 'lucide-react';
 import { ProgressStat } from './ProgressStat';
-import WeightMiniChart from './WeightProgressChart';
-import WeightProgressChart from './WeightProgressChart';
 
 export function DailyProgress() {
     const { getTotalCalories, getTotalProtein, goals } = useNutrition();
@@ -60,10 +58,6 @@ export function DailyProgress() {
                             {Math.max(0, goals.proteinGoal - protein)}g protein
                         </p>
                     </div>
-                </div>
-
-                <div className="sm:col-span-2">
-                    <WeightProgressChart />
                 </div>
             </CardContent>
         </Card>

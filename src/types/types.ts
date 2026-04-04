@@ -26,6 +26,7 @@ export interface DailyLog {
 export interface NutritionGoals {
     calorieGoal: number;
     proteinGoal: number;
+    weightGoal: number;
 }
 
 import { ReactNode } from 'react';

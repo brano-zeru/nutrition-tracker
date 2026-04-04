@@ -2,7 +2,6 @@ import { TabsContent } from '@radix-ui/react-tabs';
 import { HistoryLog } from '../historyLog';
 import { DashboardHeader } from '../dashboardHeader';
 import { DailyProgress } from '../dailyProgress';
-import { FoodLog } from '../foodLog';
 
 export const History = () => {
     return (
@@ -11,7 +10,6 @@ export const History = () => {
             <div className="space-y-4 sm:space-y-6">
                 <DashboardHeader />
                 <DailyProgress />
-                <FoodLog />
             </div>
         </div>
     );

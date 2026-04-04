@@ -15,14 +15,16 @@ import {
     DialogClose,
 } from '@/components/ui/dialog';
 import { FieldGroup, Field, FieldLabel } from '@/components/ui/field';
-import { Settings, Target } from 'lucide-react';
+import { Settings, Target, Scale } from 'lucide-react';
 
 export function GoalsSettings() {
     const { goals, updateGoals } = useNutrition();
     const [isOpen, setIsOpen] = useState(false);
+
     const [localGoals, setLocalGoals] = useState({
         calorieGoal: goals.calorieGoal.toString(),
         proteinGoal: goals.proteinGoal.toString(),
+        weightGoal: goals.weightGoal.toString(),
     });
 
     const handleOpen = (open: boolean) => {
@@ -30,6 +32,7 @@ export function GoalsSettings() {
             setLocalGoals({
                 calorieGoal: goals.calorieGoal.toString(),
                 proteinGoal: goals.proteinGoal.toString(),
+                weightGoal: (goals.weightGoal || 70).toString(),
             });
         }
         setIsOpen(open);
@@ -40,6 +43,7 @@ export function GoalsSettings() {
         updateGoals({
             calorieGoal: parseInt(localGoals.calorieGoal) || 2000,
             proteinGoal: parseInt(localGoals.proteinGoal) || 150,
+            weightGoal: parseFloat(localGoals.weightGoal) || 70,
         });
         setIsOpen(false);
     };
@@ -62,7 +66,7 @@ export function GoalsSettings() {
                         Daily Goals
                     </DialogTitle>
                     <DialogDescription>
-                        Set your daily calorie and protein targets.
+                        Set your daily targets and body weight goal.
                     </DialogDescription>
                 </DialogHeader>
                 <form onSubmit={handleSubmit}>
@@ -78,14 +82,10 @@ export function GoalsSettings() {
                                         calorieGoal: e.target.value,
                                     }))
                                 }
-                                placeholder="2000"
                                 className="bg-input border-border"
                             />
-                            <p className="text-[10px] sm:text-xs text-muted-foreground mt-1">
-                                Recommended: 1600-2400 for women, 2000-3000 for
-                                men
-                            </p>
                         </Field>
+
                         <Field>
                             <FieldLabel>Daily Protein Goal (grams)</FieldLabel>
                             <Input
@@ -97,15 +97,33 @@ export function GoalsSettings() {
                                         proteinGoal: e.target.value,
                                     }))
                                 }
-                                placeholder="150"
                                 className="bg-input border-border"
                             />
-                            <p className="text-[10px] sm:text-xs text-muted-foreground mt-1">
-                                Recommended: 0.8-1g per pound of body weight for
-                                active individuals
-                            </p>
                         </Field>
+
+                        <div className="pt-2 border-t border-white/5">
+                            <Field>
+                                <FieldLabel className="flex items-center gap-2">
+                                    <Scale className="h-3 w-3 text-emerald-500" />
+                                    Target Weight (kg)
+                                </FieldLabel>
+                                <Input
+                                    type="number"
+                                    step="0.1"
+                                    value={localGoals.weightGoal}
+                                    onChange={(e) =>
+                                        setLocalGoals((prev) => ({
+                                            ...prev,
+                                            weightGoal: e.target.value,
+                                        }))
+                                    }
+                                    placeholder="70.0"
+                                    className="bg-input border-border"
+                                />
+                            </Field>
+                        </div>
                     </FieldGroup>
+
                     <DialogFooter className="mt-4 sm:mt-6">
                         <DialogClose asChild>
                             <Button variant="outline" type="button">
@@ -114,7 +132,7 @@ export function GoalsSettings() {
                         </DialogClose>
                         <Button
                             type="submit"
-                            className="bg-primary text-primary-foreground"
+                            className="bg-primary text-primary-foreground font-bold shadow-lg shadow-primary/20"
                         >
                             Save Goals
                         </Button>

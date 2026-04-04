@@ -32,7 +32,7 @@ export function ProgressStat({
             <ProgressRing
                 value={value}
                 max={goal}
-                size={180}
+                size={140}
                 strokeWidth={10}
                 color={colorVar}
                 bgColor="var(--secondary)"
