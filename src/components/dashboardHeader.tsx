@@ -24,7 +24,10 @@ export function DashboardHeader() {
         setSelectedDate(new Date());
     };
 
+    const weekAgo = new Date();
+    weekAgo.setDate(new Date().getDate() - 6);
     const isToday = getDateString(selectedDate) === getDateString(new Date());
+    const isAtLimit = getDateString(selectedDate) === getDateString(weekAgo);
 
     const formatDate = (date: Date) => {
         if (isToday) return 'Today';
@@ -47,7 +50,8 @@ export function DashboardHeader() {
                     variant="ghost"
                     size="icon"
                     onClick={goToPreviousDay}
-                    className="h-8 w-8 sm:h-9 sm:w-9 text-muted-foreground hover:text-foreground"
+                    disabled={isAtLimit}
+                    className="h-8 w-8 sm:h-9 sm:w-9 text-muted-foreground hover:text-foreground disabled:opacity-30"
                 >
                     <ChevronLeft className="h-4 w-4 sm:h-5 sm:w-5" />
                 </Button>

@@ -41,6 +41,7 @@
     /* Custom health-tech tokens */
     --calories: oklch(0.7 0.2 30);
     --protein: oklch(0.7 0.15 200);
+    --weight: oklch(76.061% 0.14333 156.511);
     --success: oklch(0.75 0.18 160);
 }
 
@@ -80,6 +81,7 @@
 
     --calories: oklch(0.7 0.2 30);
     --protein: oklch(0.7 0.15 200);
+    --weight: oklch(76.061% 0.14333 156.511);
     --success: oklch(0.75 0.18 160);
 }
 
@@ -124,6 +126,7 @@
     --color-sidebar-ring: var(--sidebar-ring);
     --color-calories: var(--calories);
     --color-protein: var(--protein);
+    --color-weight: var(--weight);
     --color-success: var(--success);
 }
 

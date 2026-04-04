@@ -27,13 +27,9 @@ export const Dashboard = () => {
             <MagicAIEntry onParsedEntry={handleAIParsedEntry} />
             <DashboardHeader />
             <div className="grid lg:grid-cols-3 gap-4 sm:gap-6">
-                <div className="lg:col-span-2 space-y-4 sm:space-y-6">
+                <div className="lg:col-span-3 space-y-4 sm:space-y-6">
                     <DailyProgress />
                     <FoodLog />
-                </div>
-
-                <div className="hidden lg:block lg:col-span-1">
-                    <HistoryLog />
                 </div>
             </div>
         </>
