@@ -1,5 +1,8 @@
 import { jwtVerify, SignJWT } from 'jose';
 import { AuthPayload } from '@/types';
+import { config } from 'dotenv';
+
+config();
 
 const SECRET = new TextEncoder().encode(process.env.JWT_AUTH_SECRET);
 
