@@ -7,10 +7,7 @@ export async function POST() {
         { status: 200 },
     );
 
-    response.cookies.set(AUTH_COOKIE_NAME, '', {
-        path: '/',
-        maxAge: 0,
-    });
+    response.cookies.delete({ name: AUTH_COOKIE_NAME, path: '/' });
 
     return response;
 }
