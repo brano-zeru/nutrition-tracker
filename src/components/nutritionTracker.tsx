@@ -9,6 +9,7 @@ import { useMemo, useState } from 'react';
 import { Dashboard, History, Stats } from './pages';
 import { Tab, tabKeys } from '@/types';
 import { TabsContent } from '@radix-ui/react-tabs';
+import { LogoutButton } from './logoutButton';
 
 function TrackerContent() {
     const [activeTab, setActiveTab] = useState(tabKeys.DASHBOARD);
@@ -59,6 +60,7 @@ function TrackerContent() {
                         <div className="flex items-center gap-1.5 sm:gap-2">
                             <SavedFoodsLibrary />
                             <GoalsSettings />
+                            <LogoutButton />
                         </div>
                     </div>
                 </div>
