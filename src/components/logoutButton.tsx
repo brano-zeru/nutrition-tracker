@@ -19,7 +19,7 @@ export function LogoutButton() {
         <Button
             type="button"
             onClick={handleLogout}
-            className="bg-primary text-destructive-foreground hover:bg-primary/90 shrink-0"
+            className="bg-primary text-primary-foreground hover:bg-primary/90 shrink-0"
         >
             <span className="hidden md:inline">Logout</span>
             <LogOut />
