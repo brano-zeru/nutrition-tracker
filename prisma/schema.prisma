@@ -19,5 +19,42 @@ model User {
   role         UserRole @default(USER)
   createdAt    DateTime @default(now()) @map("created_at")
 
+  profile Profile?
+
+  foodLogs FoodLog[]
+
   @@map("users")
+}
+
+model Profile {
+  id           String @id @default(uuid())
+  age          Int?
+  height       Float?
+  weight       Float? @map("weight")
+  targetWeight Float? @map("target_weight")
+  calorieGoal  Int    @default(2500) @map("calorie_goal")
+  proteinGoal  Int    @default(110) @map("protein_goal")
+
+  userId String @unique @map("user_id")
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("profiles")
+}
+
+model FoodLog {
+  id       String @id @default(uuid())
+  foodName String @map("food_name")
+  calories Float
+  protein  Float
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  userId String @map("user_id")
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("food_logs")
+  @@index([userId])
 }

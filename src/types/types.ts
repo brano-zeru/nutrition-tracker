@@ -1,4 +1,4 @@
-import { User as PrismaUser } from '@prisma/client';
+import { User as PrismaUser, Profile as PrismaProfile } from '@prisma/client';
 
 export interface FoodEntry {
     id: string;
@@ -51,3 +51,18 @@ export interface AuthPayload extends Omit<UserDTO, 'id'> {
     iat: number;
     exp: number;
 }
+
+export type ProfileDTO = Pick<
+    PrismaProfile,
+    'age' | 'height' | 'weight' | 'targetWeight' | 'calorieGoal' | 'proteinGoal'
+>;
+
+export interface UserDetails {
+    user: UserDTO;
+    profile: ProfileDTO | null;
+}
+
+export type UserGoals = Pick<
+    ProfileDTO,
+    'targetWeight' | 'calorieGoal' | 'proteinGoal'
+>;
