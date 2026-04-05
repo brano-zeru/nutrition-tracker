@@ -7,7 +7,7 @@ export async function POST() {
         { status: 200 },
     );
 
-    response.cookies.delete({ name: AUTH_COOKIE_NAME, path: '/' });
+    response.cookies.delete(AUTH_COOKIE_NAME);
 
     return response;
 }
