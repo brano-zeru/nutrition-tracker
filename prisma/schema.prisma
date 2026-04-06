@@ -28,12 +28,12 @@ model User {
 
 model Profile {
   id           String @id @default(uuid())
-  age          Int?
-  height       Float?
-  weight       Float? @map("weight")
+  age          Int
+  height       Float
+  weight       Float @map("weight")
   targetWeight Float? @map("target_weight")
-  calorieGoal  Int    @default(2500) @map("calorie_goal")
-  proteinGoal  Int    @default(110) @map("protein_goal")
+  calorieGoal  Int?    @default(2500) @map("calorie_goal")
+  proteinGoal  Int?    @default(110) @map("protein_goal")
 
   userId String @unique @map("user_id")
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)

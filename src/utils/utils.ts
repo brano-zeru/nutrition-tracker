@@ -23,3 +23,18 @@ export const setPayloadHeaders = (
 
     return requestHeaders;
 };
+
+// this function is used in the useRegisterForm to accumulate data between form steps
+export const accumulateData = <T, K extends keyof T>(
+    prevData: Partial<T>,
+    newData: Partial<T[K]>,
+    scope: K,
+): Partial<T> => {
+    return {
+        ...prevData,
+        [scope]: {
+            ...(prevData[scope] || {}),
+            ...newData,
+        },
+    };
+};

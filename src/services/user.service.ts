@@ -76,4 +76,28 @@ export class UserService {
             proteinGoal: goals.proteinGoal,
         };
     }
+
+    static async setUserProfile(
+        userId: string,
+        goals: ProfileDTO,
+    ): Promise<ProfileDTO | null> {
+        const profileResults = await prisma.profile.create({
+            data: {
+                userId,
+                targetWeight: goals.targetWeight,
+                calorieGoal: goals.calorieGoal,
+                proteinGoal: goals.proteinGoal,
+            },
+            select: {
+                age: true,
+                height: true,
+                weight: true,
+                targetWeight: true,
+                calorieGoal: true,
+                proteinGoal: true,
+            },
+        });
+
+        return profileResults;
+    }
 }

@@ -1,12 +1,12 @@
 -- CreateTable
 CREATE TABLE "profiles" (
     "id" TEXT NOT NULL,
-    "age" INTEGER,
-    "height" DOUBLE PRECISION,
-    "weight" DOUBLE PRECISION,
+    "age" INTEGER NOT NULL,
+    "height" DOUBLE PRECISION NOT NULL,
+    "weight" DOUBLE PRECISION NOT NULL,
     "target_weight" DOUBLE PRECISION,
-    "calorie_goal" INTEGER NOT NULL DEFAULT 2500,
-    "protein_goal" INTEGER NOT NULL DEFAULT 110,
+    "calorie_goal" INTEGER DEFAULT 2500,
+    "protein_goal" INTEGER DEFAULT 110,
     "user_id" TEXT NOT NULL,
     "updated_at" TIMESTAMP(3) NOT NULL,
 

@@ -1,26 +1,44 @@
-import { NextRequest, NextResponse } from 'next/server';
 import { AuthService } from '@/services/auth.service';
+import { RegisterUserDTO } from '@/types';
+import { NextResponse } from 'next/server';
 
-export async function POST(request: NextRequest) {
+export async function POST(req: Request) {
     try {
-        const { email, password, fullName } = await request.json();
+        const { user, profile } = await req.json();
 
-        if (!email || !password || !fullName) {
+        if (
+            !user?.email ||
+            !user?.role ||
+            !user?.fullName ||
+            !profile?.age ||
+            !profile?.height ||
+            !profile?.weight ||
+            !profile?.targetWeight
+        ) {
             return NextResponse.json(
-                { error: 'Missing required fields' },
-                { status: 400 },
+                { error: 'required fields are missing' },
+                { status: 500 },
             );
         }
 
-        const user = await AuthService.register(email, password, fullName);
+        const userDetails = await AuthService.register({
+            user,
+            profile,
+        } as RegisterUserDTO);
 
         return NextResponse.json(
-            { message: 'User registered successfully', user },
+            {
+                message: 'User created successfully',
+                userDetails,
+            },
             { status: 201 },
         );
-    } catch (error: any) {
+    } catch (error: unknown) {
         return NextResponse.json(
-            { error: error.message || 'Internal Server Error' },
+            {
+                message: 'unknown error accured on register',
+                error: (error as Error).message,
+            },
             { status: 500 },
         );
     }

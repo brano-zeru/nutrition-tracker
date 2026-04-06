@@ -1,13 +1,13 @@
 'use client';
 
 import * as z from 'zod';
-import AuthForm from '@/components/auth/AuthForm';
 import { fetchApi } from '@/services/fetchApi';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Pages } from '@/consts';
 import { getRoute } from '@/utils';
 import { UserDTO } from '@/types';
+import { GenericForm } from '@/components/GenericForm';
 
 const loginSchema = z.object({
     email: z.string().email('Invalid email address'),
@@ -56,25 +56,29 @@ export default function LoginPage() {
     };
 
     return (
-        <AuthForm
-            title="Nutrish"
-            description="Welcome back! Sign in to continue."
-            schema={loginSchema}
-            fields={fields}
-            onSubmit={handleLogin}
-            submitLabel="Sign In"
-            isSubmittingLabel="Signing in..."
-            linkElement={
-                <p>
-                    {`Don't have an account? `}
-                    <Link
-                        href="/register"
-                        className="text-emerald-500 hover:text-emerald-400 font-medium"
-                    >
-                        Sign up
-                    </Link>
-                </p>
-            }
-        />
+        <main className="min-h-screen w-full flex items-center justify-center bg-zinc-950 px-4">
+            <div className="w-full max-w-md">
+                <GenericForm
+                    title="Nutrish"
+                    description="Welcome back! Sign in to continue."
+                    schema={loginSchema}
+                    fields={fields}
+                    onSubmit={handleLogin}
+                    submitLabel="Sign In"
+                    isSubmittingLabel="Signing in..."
+                    linkElement={
+                        <p>
+                            {`Don't have an account? `}
+                            <Link
+                                href="/register"
+                                className="text-emerald-500 hover:text-emerald-400 font-medium"
+                            >
+                                Sign up
+                            </Link>
+                        </p>
+                    }
+                />
+            </div>
+        </main>
     );
 }
