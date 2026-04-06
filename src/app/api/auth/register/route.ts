@@ -1,3 +1,5 @@
+import { AUTH_COOKIE_NAME } from '@/consts';
+import { signToken } from '@/lib/auth';
 import { AuthService } from '@/services/auth.service';
 import { RegisterUserDTO } from '@/types';
 import { NextResponse } from 'next/server';
@@ -26,13 +28,32 @@ export async function POST(req: Request) {
             profile,
         } as RegisterUserDTO);
 
-        return NextResponse.json(
+        if (!userDetails) return null;
+
+        const token = await signToken({
+            sub: userDetails.user.id,
+            userDetails,
+            iat: Math.floor(Date.now() / 1000),
+            exp: Math.floor(Date.now() / 1000) + 60 * 60 * 2,
+        });
+
+        const response = NextResponse.json(
             {
                 message: 'User created successfully',
                 userDetails,
             },
             { status: 201 },
         );
+
+        response.cookies.set(AUTH_COOKIE_NAME, token, {
+            httpOnly: true,
+            secure: true,
+            sameSite: 'lax',
+            maxAge: 60 * 60 * 2,
+            path: '/',
+        });
+
+        return response;
     } catch (error: unknown) {
         return NextResponse.json(
             {

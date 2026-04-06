@@ -47,12 +47,6 @@ export interface Tab {
 
 export type UserDTO = Pick<PrismaUser, 'id' | 'email' | 'role' | 'fullName'>;
 
-export interface AuthPayload extends Omit<UserDTO, 'id'> {
-    sub: UserDTO['id'];
-    iat: number;
-    exp: number;
-}
-
 export type ProfileDTO = Pick<
     PrismaProfile,
     'age' | 'height' | 'weight' | 'targetWeight' | 'calorieGoal' | 'proteinGoal'
@@ -61,6 +55,13 @@ export type ProfileDTO = Pick<
 export interface UserDetails {
     user: UserDTO;
     profile: ProfileDTO;
+}
+
+export interface AuthPayload {
+    sub: UserDTO['id'];
+    userDetails: UserDetails;
+    iat: number;
+    exp: number;
 }
 
 export interface RegisterUserDTO extends Omit<UserDetails, 'user'> {

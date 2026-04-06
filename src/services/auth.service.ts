@@ -51,25 +51,39 @@ export class AuthService {
         } as UserDetails;
     }
 
-    static async login(email: string, password: string) {
-        const user = await prisma.user.findUnique({
+    static async login(
+        email: string,
+        password: string,
+    ): Promise<UserDetails | null> {
+        const result = await prisma.user.findUnique({
             where: { email },
+            include: { profile: true },
         });
 
-        if (!user) {
-            return null;
-        }
+        if (!result) return null;
 
         const isPasswordValid = await bcrypt.compare(
             password,
-            user.passwordHash,
+            result.passwordHash,
         );
 
-        if (!isPasswordValid) {
-            return null;
-        }
+        if (!isPasswordValid) return null;
 
-        const { passwordHash: _, ...userWithoutPassword } = user;
-        return userWithoutPassword;
+        return {
+            user: {
+                id: result.id,
+                email: result.email,
+                fullName: result.fullName,
+                role: result.role,
+            },
+            profile: {
+                age: result.profile?.age,
+                height: result.profile?.height,
+                weight: result.profile?.weight,
+                targetWeight: result.profile?.targetWeight,
+                calorieGoal: result.profile?.calorieGoal,
+                proteinGoal: result.profile?.proteinGoal,
+            },
+        } as UserDetails;
     }
 }

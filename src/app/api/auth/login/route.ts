@@ -14,9 +14,9 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        const user = await AuthService.login(email, password);
+        const userDetails = await AuthService.login(email, password);
 
-        if (!user) {
+        if (!userDetails) {
             return NextResponse.json(
                 { error: 'Invalid credentials' },
                 { status: 401 },
@@ -24,16 +24,14 @@ export async function POST(request: NextRequest) {
         }
 
         const token = await signToken({
-            sub: user.id,
-            email: user.email,
-            fullName: user.fullName,
-            role: user.role,
+            sub: userDetails.user.id,
+            userDetails,
             iat: Math.floor(Date.now() / 1000),
             exp: Math.floor(Date.now() / 1000) + 60 * 60 * 2,
         });
 
         const response = NextResponse.json(
-            { message: 'Login successful', user },
+            { message: 'Login successful', userDetails },
             { status: 200 },
         );
 

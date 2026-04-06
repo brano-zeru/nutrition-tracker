@@ -18,7 +18,6 @@ export async function fetchApi<T>(
     const data = await response.json();
 
     if (!response.ok) {
-        // זריקת שגיאה עם ההודעה מה-API או הודעה גנרית
         throw new Error(data.error || 'An unexpected error occurred');
     }
 

@@ -6,8 +6,9 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Pages } from '@/consts';
 import { getRoute } from '@/utils';
-import { UserDTO } from '@/types';
+import { UserDetails, UserDTO } from '@/types';
 import { GenericForm } from '@/components/GenericForm';
+import { useAuth } from '@/contexts/AuthContext';
 
 const loginSchema = z.object({
     email: z.string().email('Invalid email address'),
@@ -39,19 +40,21 @@ export default function LoginPage() {
 
     const router = useRouter();
 
+    const { setUserDetails } = useAuth();
+
     const handleLogin = async (data: LoginFormData) => {
         try {
-            const result = await fetchApi<{ message: string; user: UserDTO }>(
-                '/api/auth/login',
-                'POST',
-                data,
-            );
+            const { userDetails } = await fetchApi<{
+                message: string;
+                userDetails: UserDetails;
+            }>('/api/auth/login', 'POST', data);
 
-            if (result.user) {
+            if (userDetails) {
+                setUserDetails(userDetails);
                 router.push(getRoute(Pages.HOME));
             }
-        } catch (err: unknown) {
-            console.error('Login failed:', (err as Error).message);
+        } catch (error: unknown) {
+            console.error('Login failed:', (error as Error).message);
         }
     };
 

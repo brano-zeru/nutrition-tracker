@@ -1,10 +1,9 @@
 import { jwtVerify, SignJWT } from 'jose';
 import { AuthPayload } from '@/types';
 import { config } from 'dotenv';
+import { appConfig } from '@/config';
 
-config();
-
-const SECRET = new TextEncoder().encode(process.env.JWT_AUTH_SECRET);
+const SECRET = new TextEncoder().encode(appConfig.jwtAuthSecret);
 
 export async function signToken(payload: AuthPayload) {
     return await new SignJWT({ ...payload })
@@ -12,26 +11,4 @@ export async function signToken(payload: AuthPayload) {
         .setIssuedAt()
         .setExpirationTime('2h')
         .sign(SECRET);
-}
-
-export async function verifyToken(token: string): Promise<AuthPayload | null> {
-    try {
-        const { payload } = await jwtVerify(token, SECRET);
-        const jwtPayload = payload as unknown as AuthPayload;
-
-        if (!jwtPayload.sub || !jwtPayload.email) {
-            return null;
-        }
-
-        return {
-            sub: jwtPayload.sub,
-            email: jwtPayload.email,
-            fullName: jwtPayload.fullName,
-            role: jwtPayload.role,
-            iat: jwtPayload.iat,
-            exp: jwtPayload.exp,
-        };
-    } catch (error) {
-        return null;
-    }
 }

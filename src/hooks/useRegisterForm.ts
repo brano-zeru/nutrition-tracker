@@ -5,8 +5,9 @@ import { useRouter } from 'next/navigation';
 import { fetchApi } from '@/services/fetchApi';
 import { accumulateData, getRoute } from '@/utils';
 import { Pages } from '@/consts';
-import { RegisterUserDTO } from '@/types';
+import { RegisterUserDTO, UserDetails } from '@/types';
 import { StepScope } from '@/app/register/register.config';
+import { useAuth } from '@/contexts/AuthContext';
 
 type FormStepData = Record<string, string | number | undefined>;
 
@@ -18,6 +19,8 @@ export const useRegisterForm = (totalSteps: number) => {
     const [error, setError] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const router = useRouter();
+
+    const { setUserDetails } = useAuth();
 
     const handleStepSubmit = async (
         formData: FormStepData,
@@ -42,11 +45,16 @@ export const useRegisterForm = (totalSteps: number) => {
                     updatedData.user.role = 'USER';
                 }
 
-                await fetchApi(
+                const { userDetails } = await fetchApi<{
+                    message: string;
+                    userDetails: UserDetails;
+                }>(
                     '/api/auth/register',
                     'POST',
                     updatedData as RegisterUserDTO,
                 );
+
+                setUserDetails(userDetails);
 
                 router.push(getRoute(Pages.HOME));
             } catch (error: unknown) {
