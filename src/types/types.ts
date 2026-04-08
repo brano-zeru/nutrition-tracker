@@ -59,7 +59,7 @@ export interface UserDetails {
 
 export interface AuthPayload {
     sub: UserDTO['id'];
-    userDetails: UserDetails;
+    user: UserDTO;
     iat: number;
     exp: number;
 }

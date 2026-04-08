@@ -23,16 +23,16 @@ export async function POST(req: Request) {
             );
         }
 
-        const userDetails = await AuthService.register({
+        const userResults = await AuthService.register({
             user,
             profile,
         } as RegisterUserDTO);
 
-        if (!userDetails) return null;
+        if (!userResults) return null;
 
         const token = await signToken({
-            sub: userDetails.user.id,
-            userDetails,
+            sub: userResults.id,
+            user: userResults,
             iat: Math.floor(Date.now() / 1000),
             exp: Math.floor(Date.now() / 1000) + 60 * 60 * 2,
         });
@@ -40,7 +40,7 @@ export async function POST(req: Request) {
         const response = NextResponse.json(
             {
                 message: 'User created successfully',
-                userDetails,
+                user: userResults,
             },
             { status: 201 },
         );

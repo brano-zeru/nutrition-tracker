@@ -3,7 +3,7 @@ import { cookies } from 'next/headers';
 import { jwtVerify } from 'jose';
 import { config } from 'dotenv';
 import { AUTH_COOKIE_NAME } from '@/consts';
-import { UserDetails } from '@/types';
+import { UserDetails, UserDTO } from '@/types';
 
 config();
 
@@ -20,12 +20,12 @@ export async function GET() {
 
         const { payload } = await jwtVerify(token, secret);
 
-        const { userDetails } = payload as unknown as {
-            userDetails: UserDetails;
+        const { user } = payload as unknown as {
+            user: UserDTO;
         };
 
         return NextResponse.json({
-            userDetails,
+            user,
             message: 'cookies returned!',
         });
     } catch (error) {

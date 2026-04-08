@@ -40,17 +40,19 @@ export default function LoginPage() {
 
     const router = useRouter();
 
-    const { setUserDetails } = useAuth();
+    const { setUser } = useAuth();
 
     const handleLogin = async (data: LoginFormData) => {
         try {
-            const { userDetails } = await fetchApi<{
+            const { user } = await fetchApi<{
                 message: string;
-                userDetails: UserDetails;
+                user: UserDTO;
             }>('/api/auth/login', 'POST', data);
 
-            if (userDetails) {
-                setUserDetails(userDetails);
+            console.log({ user });
+
+            if (user) {
+                setUser(user);
                 router.push(getRoute(Pages.HOME));
             }
         } catch (error: unknown) {

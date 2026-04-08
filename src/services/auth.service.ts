@@ -1,9 +1,9 @@
 import bcrypt from 'bcrypt';
 import { prisma } from '../lib/prisma';
-import { RegisterUserDTO, UserDetails } from '@/types';
+import { RegisterUserDTO, UserDetails, UserDTO } from '@/types';
 
 export class AuthService {
-    static async register(data: RegisterUserDTO) {
+    static async register(data: RegisterUserDTO): Promise<UserDTO | null> {
         const {
             user: { email, password, fullName },
             profile: { age, height, weight, targetWeight },
@@ -12,7 +12,7 @@ export class AuthService {
         const saltRounds = 10;
         const passwordHash = await bcrypt.hash(password, saltRounds);
 
-        const result = await prisma.user.create({
+        const userResults = await prisma.user.create({
             data: {
                 email,
                 passwordHash,
@@ -26,64 +26,40 @@ export class AuthService {
                     },
                 },
             },
-            include: {
-                profile: true,
-            },
         });
 
-        if (!result) return null;
+        if (!userResults) return null;
 
         return {
-            user: {
-                id: result.id,
-                email: result.email,
-                role: result.role,
-                fullName: result.fullName,
-            },
-            profile: {
-                age: result.profile?.age,
-                height: result.profile?.height,
-                weight: result.profile?.weight,
-                targetWeight: result.profile?.targetWeight,
-                calorieGoal: result.profile?.calorieGoal,
-                proteinGoal: result.profile?.proteinGoal,
-            },
-        } as UserDetails;
+            id: userResults.id,
+            email: userResults.email,
+            role: userResults.role,
+            fullName: userResults.fullName,
+        };
     }
 
     static async login(
         email: string,
         password: string,
-    ): Promise<UserDetails | null> {
-        const result = await prisma.user.findUnique({
+    ): Promise<UserDTO | null> {
+        const userResults = await prisma.user.findUnique({
             where: { email },
-            include: { profile: true },
         });
 
-        if (!result) return null;
+        if (!userResults) return null;
 
         const isPasswordValid = await bcrypt.compare(
             password,
-            result.passwordHash,
+            userResults.passwordHash,
         );
 
         if (!isPasswordValid) return null;
 
         return {
-            user: {
-                id: result.id,
-                email: result.email,
-                fullName: result.fullName,
-                role: result.role,
-            },
-            profile: {
-                age: result.profile?.age,
-                height: result.profile?.height,
-                weight: result.profile?.weight,
-                targetWeight: result.profile?.targetWeight,
-                calorieGoal: result.profile?.calorieGoal,
-                proteinGoal: result.profile?.proteinGoal,
-            },
-        } as UserDetails;
+            id: userResults.id,
+            email: userResults.email,
+            fullName: userResults.fullName,
+            role: userResults.role,
+        };
     }
 }

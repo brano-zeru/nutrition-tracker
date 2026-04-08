@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { fetchApi } from '@/services/fetchApi';
 import { accumulateData, getRoute } from '@/utils';
 import { Pages } from '@/consts';
-import { RegisterUserDTO, UserDetails } from '@/types';
+import { RegisterUserDTO, UserDetails, UserDTO } from '@/types';
 import { StepScope } from '@/app/register/register.config';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -20,7 +20,7 @@ export const useRegisterForm = (totalSteps: number) => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const router = useRouter();
 
-    const { setUserDetails } = useAuth();
+    const { setUser } = useAuth();
 
     const handleStepSubmit = async (
         formData: FormStepData,
@@ -28,33 +28,29 @@ export const useRegisterForm = (totalSteps: number) => {
     ) => {
         setError(null);
 
-        const updatedData = accumulateData<RegisterUserDTO, StepScope>(
+        const userData = accumulateData<RegisterUserDTO, StepScope>(
             registrationData,
             formData,
             scope,
         );
 
-        setRegistrationData(updatedData);
+        setRegistrationData(userData);
 
         const isLastStep = stepIndex === totalSteps - 1;
 
         if (isLastStep) {
             setIsSubmitting(true);
             try {
-                if (updatedData.user) {
-                    updatedData.user.role = 'USER';
+                if (userData.user) {
+                    userData.user.role = 'USER';
                 }
 
-                const { userDetails } = await fetchApi<{
+                const { user } = await fetchApi<{
                     message: string;
-                    userDetails: UserDetails;
-                }>(
-                    '/api/auth/register',
-                    'POST',
-                    updatedData as RegisterUserDTO,
-                );
+                    user: UserDTO;
+                }>('/api/auth/register', 'POST', userData as RegisterUserDTO);
 
-                setUserDetails(userDetails);
+                setUser(user);
 
                 router.push(getRoute(Pages.HOME));
             } catch (error: unknown) {

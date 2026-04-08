@@ -7,31 +7,31 @@ import {
     ReactNode,
     useEffect,
 } from 'react';
-import { UserDetails } from '@/types';
+import { UserDetails, UserDTO } from '@/types';
 import { fetchApi } from '@/services/fetchApi';
 
 interface AuthContextType {
-    userDetails: UserDetails | null;
-    setUserDetails: (user: UserDetails | null) => void;
+    user: UserDTO | null;
+    setUser: (user: UserDTO | null) => void;
     isAuthenticated: boolean;
     isLoading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-    const [userDetails, setUserDetails] = useState<UserDetails | null>(null);
+    const [user, setUser] = useState<UserDTO | null>(null);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         const checkAuth = async () => {
             try {
-                const { userDetails } = await fetchApi<{
+                const { user } = await fetchApi<{
                     message: string;
-                    userDetails: UserDetails;
+                    user: UserDTO;
                 }>('/api/auth/me', 'GET');
-                if (userDetails) setUserDetails(userDetails);
+                if (user) setUser(user);
             } catch {
-                setUserDetails(null);
+                setUser(null);
             } finally {
                 setIsLoading(false);
             }
@@ -42,9 +42,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return (
         <AuthContext.Provider
             value={{
-                userDetails,
-                setUserDetails,
-                isAuthenticated: !!userDetails,
+                user,
+                setUser,
+                isAuthenticated: !!user,
                 isLoading,
             }}
         >

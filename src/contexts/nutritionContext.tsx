@@ -63,25 +63,6 @@ export function NutritionProvider({ children }: { children: React.ReactNode }) {
         useState<SavedFood[]>(initialSavedFoods);
     const [goals, setGoals] = useState<NutritionGoals>(defaultGoals);
 
-    const { userDetails } = useAuth();
-
-    useEffect(() => {
-        const getUserGoals = () => {
-            if (userDetails && userDetails.profile) {
-                const { profile } = userDetails;
-                const goals: NutritionGoals = {
-                    calorieGoal: profile.calorieGoal || 100,
-                    proteinGoal: profile.proteinGoal || 100,
-                    weightGoal: profile.targetWeight || 100,
-                };
-
-                setGoals(goals);
-            }
-        };
-
-        getUserGoals();
-    }, [userDetails]);
-
     // Load sample data on client side only
     useEffect(() => {
         setDailyLogs(generateSampleData());
