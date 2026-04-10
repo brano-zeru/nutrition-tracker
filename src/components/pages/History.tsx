@@ -1,4 +1,3 @@
-import { TabsContent } from '@radix-ui/react-tabs';
 import { HistoryLog } from '../historyLog';
 import { DashboardHeader } from '../dashboardHeader';
 import { DailyProgress } from '../dailyProgress';

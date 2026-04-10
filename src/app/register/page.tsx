@@ -1,6 +1,5 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
 import { GenericForm } from '@/components/GenericForm';
 import { STEPS } from './register.config';
 import { FormProgressBar } from './FormProgressBar';

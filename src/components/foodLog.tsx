@@ -29,8 +29,7 @@ import { FieldGroup, Field, FieldLabel } from '@/components/ui/field';
 import { FoodEntry } from '@/types/types';
 
 export function FoodLog() {
-    const { getCurrentDayLog, addFoodEntry, removeFoodEntry, updateFoodEntry } =
-        useNutrition();
+    const { getCurrentDayLog, addFoodEntry, removeFoodEntry } = useNutrition();
     const [isAddOpen, setIsAddOpen] = useState(false);
     const [duplicateEntry, setDuplicateEntry] = useState<FoodEntry | null>(
         null,

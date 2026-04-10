@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt';
 import { prisma } from '../lib/prisma';
-import { RegisterUserDTO, UserDetails, UserDTO } from '@/types';
+import { RegisterUserDTO, UserDTO } from '@/types';
 
 export class AuthService {
     static async register(data: RegisterUserDTO): Promise<UserDTO | null> {

@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Pages } from '@/consts';
 import { getRoute } from '@/utils';
-import { UserDetails, UserDTO } from '@/types';
+import { UserDTO } from '@/types';
 import { GenericForm } from '@/components/GenericForm';
 import { useAuth } from '@/contexts/AuthContext';
 

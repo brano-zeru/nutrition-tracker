@@ -15,7 +15,6 @@ import {
     getDateString,
     defaultGoals,
 } from './nutritionStore';
-import { useAuth } from './AuthContext';
 
 interface NutritionContextType {
     // Current date
@@ -56,7 +55,7 @@ const NutritionContext = createContext<NutritionContextType | null>(null);
 export function NutritionProvider({ children }: { children: React.ReactNode }) {
     // Initialize with empty state to avoid hydration mismatch
     // The actual data is loaded on the client side in useEffect
-    const [mounted, setMounted] = useState(false);
+    const [_mounted, setMounted] = useState(false);
     const [selectedDate, setSelectedDate] = useState<Date>(() => new Date());
     const [dailyLogs, setDailyLogs] = useState<Record<string, DailyLog>>({});
     const [savedFoods, setSavedFoods] =

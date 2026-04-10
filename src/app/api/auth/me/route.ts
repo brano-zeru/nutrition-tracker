@@ -3,7 +3,7 @@ import { cookies } from 'next/headers';
 import { jwtVerify } from 'jose';
 import { config } from 'dotenv';
 import { AUTH_COOKIE_NAME } from '@/consts';
-import { UserDetails, UserDTO } from '@/types';
+import { UserDTO } from '@/types';
 
 config();
 

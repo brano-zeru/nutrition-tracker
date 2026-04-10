@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { fetchApi } from '@/services/fetchApi';
 import { accumulateData, getRoute } from '@/utils';
 import { Pages } from '@/consts';
-import { RegisterUserDTO, UserDetails, UserDTO } from '@/types';
+import { RegisterUserDTO, UserDTO } from '@/types';
 import { StepScope } from '@/app/register/register.config';
 import { useAuth } from '@/contexts/AuthContext';
 

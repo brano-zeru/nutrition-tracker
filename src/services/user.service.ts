@@ -1,5 +1,4 @@
 import { prisma } from '@/lib/prisma';
-import { ProfileDTO, UserDetails, UserGoals } from '@/types';
 
 export class UserService {
     static async getUser(userId: string) {
