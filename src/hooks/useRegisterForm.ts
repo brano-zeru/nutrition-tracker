@@ -16,17 +16,33 @@ export const useRegisterForm = (totalSteps: number) => {
     const [registrationData, setRegistrationData] = useState<
         Partial<RegisterUserDTO>
     >({});
-    const [error, setError] = useState<string | null>(null);
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const router = useRouter();
 
+    const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+    const [generalError, setGeneralError] = useState<string | null>(null);
+
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isValidating, setIsValidating] = useState(false);
+
+    const router = useRouter();
     const { setUser } = useAuth();
+
+    const setExternalError = (name: string, message: string | null) => {
+        setFieldErrors((prev) => {
+            if (!message) {
+                const { [name]: _, ...rest } = prev;
+                return rest;
+            }
+            return { ...prev, [name]: message };
+        });
+    };
 
     const handleStepSubmit = async (
         formData: FormStepData,
         scope: StepScope,
     ) => {
-        setError(null);
+        setGeneralError(null);
+
+        if (Object.keys(fieldErrors).length > 0) return;
 
         const userData = accumulateData<RegisterUserDTO, StepScope>(
             registrationData,
@@ -51,10 +67,9 @@ export const useRegisterForm = (totalSteps: number) => {
                 }>('/api/auth/register', 'POST', userData as RegisterUserDTO);
 
                 setUser(user);
-
                 router.push(getRoute(Pages.HOME));
             } catch (error: unknown) {
-                setError(
+                setGeneralError(
                     (error as Error)?.message || 'Invalid Registration Error',
                 );
             } finally {
@@ -67,9 +82,13 @@ export const useRegisterForm = (totalSteps: number) => {
 
     return {
         stepIndex,
-        error,
+        error: generalError,
+        fieldErrors,
         isSubmitting,
         handleStepSubmit,
+        setExternalError,
         registrationData,
+        isValidating,
+        setIsValidating,
     };
 };

@@ -1,7 +1,7 @@
 export async function fetchApi<T>(
     url: string,
     method: 'GET' | 'POST',
-    body: object = {},
+    body?: object,
 ): Promise<T> {
     const defaultHeaders = {
         'Content-Type': 'application/json',
@@ -12,7 +12,7 @@ export async function fetchApi<T>(
             ...defaultHeaders,
         },
         method,
-        body: JSON.stringify(body),
+        ...(body ? { body: JSON.stringify(body) } : {}),
     });
 
     const data = await response.json();

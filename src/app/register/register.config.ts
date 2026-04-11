@@ -15,7 +15,14 @@ export const profileSchema = z.object({
 
 export type StepScope = 'user' | 'profile';
 
-interface FormStep {
+interface FormField {
+    name: string;
+    label: string;
+    type: string;
+    placeholder: string;
+}
+
+export interface FormStep {
     id: string;
     scope: StepScope;
     title: string;
@@ -23,12 +30,7 @@ interface FormStep {
     schema: z.ZodObject<any>;
     submitLabel: string;
     isSubmittingLabel: string;
-    fields: {
-        name: string;
-        label: string;
-        type: string;
-        placeholder: string;
-    }[];
+    fields: FormField[];
 }
 
 export const STEPS: FormStep[] = [

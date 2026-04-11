@@ -18,7 +18,11 @@ export async function POST(req: Request) {
             !profile?.targetWeight
         ) {
             return NextResponse.json(
-                { error: 'required fields are missing' },
+                {
+                    error: 'required fields are missing',
+                    profile,
+                    user,
+                },
                 { status: 500 },
             );
         }

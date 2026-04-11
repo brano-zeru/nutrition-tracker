@@ -5,6 +5,7 @@ import * as Label from '@radix-ui/react-label';
 import { DefaultValues, FieldValues, Path, useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { Button } from '@/components/ui/button';
+import { useEffect } from 'react';
 
 interface FormField<T> {
     name: Path<T>;
@@ -23,6 +24,9 @@ interface GenericFormProps<TFieldValues extends FieldValues> {
     isSubmittingLabel: string;
     defaultValues?: DefaultValues<TFieldValues>;
     linkElement?: React.ReactNode;
+    onFieldChange?: (name: string, value: any) => void;
+    externalErrors?: Record<string, string>;
+    isExternalLoading?: boolean;
 }
 
 export function GenericForm<TFieldValues extends FieldValues>({
@@ -35,16 +39,42 @@ export function GenericForm<TFieldValues extends FieldValues>({
     isSubmittingLabel,
     defaultValues,
     linkElement,
+    onFieldChange,
+    externalErrors,
+    isExternalLoading,
 }: GenericFormProps<TFieldValues>) {
     const {
         register,
         handleSubmit,
+        watch,
+        setError,
         formState: { errors, isSubmitting },
     } = useForm<TFieldValues>({
-        mode: 'onTouched',
+        mode: 'onChange',
         resolver: zodResolver(schema),
         defaultValues,
     });
+
+    useEffect(() => {
+        if (!onFieldChange) return;
+
+        const subscription = watch((value, { name }) => {
+            if (name) onFieldChange(name, value[name]);
+        });
+
+        return () => subscription.unsubscribe();
+    }, [watch, onFieldChange]);
+
+    useEffect(() => {
+        if (!externalErrors) return;
+
+        Object.entries(externalErrors).forEach(([name, message]) => {
+            setError(name as any, {
+                type: 'manual',
+                message: message,
+            });
+        });
+    }, [externalErrors, setError]);
 
     return (
         <div className="w-full max-w-md space-y-6 rounded-2xl bg-zinc-900 border border-zinc-800 p-8 shadow-2xl shadow-emerald-900/20 font-sans text-zinc-100 selection:bg-emerald-500/30">
@@ -92,10 +122,29 @@ export function GenericForm<TFieldValues extends FieldValues>({
 
                 <Button
                     type="submit"
-                    disabled={isSubmitting}
-                    className="inline-flex h-11 w-full items-center justify-center rounded-lg bg-emerald-600 px-6 py-2 text-sm font-bold text-emerald-50 transition-all hover:bg-emerald-700 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-900 disabled:opacity-50 mt-2 shadow-lg shadow-emerald-900/10"
+                    disabled={
+                        isSubmitting ||
+                        isExternalLoading ||
+                        Object.keys(errors).length > 0
+                    }
+                    className={`
+        inline-flex h-11 w-full items-center justify-center rounded-lg px-6 py-2 text-sm font-bold transition-all mt-2 shadow-lg
+        
+        bg-emerald-600 text-emerald-50 shadow-emerald-900/10 hover:bg-emerald-700 active:scale-[0.98]
+        
+        disabled:bg-zinc-800 disabled:text-zinc-500 disabled:opacity-100 disabled:cursor-not-allowed disabled:scale-100 disabled:shadow-none
+        
+        focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-900
+    `}
                 >
-                    {isSubmitting ? isSubmittingLabel : submitLabel}
+                    {isSubmitting ? (
+                        <div className="flex items-center gap-2">
+                            <div className="h-4 w-4 animate-spin rounded-full border-2 border-zinc-500 border-t-transparent" />
+                            {isSubmittingLabel}
+                        </div>
+                    ) : (
+                        submitLabel
+                    )}
                 </Button>
             </form>
 

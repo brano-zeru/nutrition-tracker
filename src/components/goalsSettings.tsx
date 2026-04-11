@@ -1,7 +1,6 @@
 'use client';
 
-import { useState } from 'react';
-import { useNutrition } from '@/contexts/nutritionContext';
+import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -16,35 +15,38 @@ import {
 } from '@/components/ui/dialog';
 import { FieldGroup, Field, FieldLabel } from '@/components/ui/field';
 import { Settings, Target, Scale } from 'lucide-react';
+import { UserGoals } from '@/types';
+import { useProfile } from '@/hooks/useProfile';
 
 export function GoalsSettings() {
-    const { goals, updateGoals } = useNutrition();
     const [isOpen, setIsOpen] = useState(false);
 
-    const [localGoals, setLocalGoals] = useState({
-        calorieGoal: goals.calorieGoal.toString(),
-        proteinGoal: goals.proteinGoal.toString(),
-        weightGoal: goals.weightGoal.toString(),
+    const { data: profile } = useProfile();
+
+    const [localGoals, setLocalGoals] = useState<UserGoals>({
+        calorieGoal: 0,
+        proteinGoal: 0,
+        targetWeight: 0,
     });
+
+    useEffect(() => {
+        if (profile) {
+            setLocalGoals(() => ({
+                calorieGoal: profile.calorieGoal || 0,
+                proteinGoal: profile.proteinGoal || 0,
+                targetWeight: profile.targetWeight || 0,
+            }));
+        }
+    }, [profile]);
 
     const handleOpen = (open: boolean) => {
         if (open) {
-            setLocalGoals({
-                calorieGoal: goals.calorieGoal.toString(),
-                proteinGoal: goals.proteinGoal.toString(),
-                weightGoal: (goals.weightGoal || 70).toString(),
-            });
         }
         setIsOpen(open);
     };
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        updateGoals({
-            calorieGoal: parseInt(localGoals.calorieGoal) || 2000,
-            proteinGoal: parseInt(localGoals.proteinGoal) || 150,
-            weightGoal: parseFloat(localGoals.weightGoal) || 70,
-        });
         setIsOpen(false);
     };
 
@@ -75,11 +77,11 @@ export function GoalsSettings() {
                             <FieldLabel>Daily Calorie Goal</FieldLabel>
                             <Input
                                 type="number"
-                                value={localGoals.calorieGoal}
+                                value={localGoals.calorieGoal || 0}
                                 onChange={(e) =>
-                                    setLocalGoals((prev) => ({
+                                    setLocalGoals((prev: UserGoals) => ({
                                         ...prev,
-                                        calorieGoal: e.target.value,
+                                        calorieGoal: Number(e.target.value),
                                     }))
                                 }
                                 className="bg-input border-border"
@@ -90,11 +92,11 @@ export function GoalsSettings() {
                             <FieldLabel>Daily Protein Goal (grams)</FieldLabel>
                             <Input
                                 type="number"
-                                value={localGoals.proteinGoal}
+                                value={localGoals.proteinGoal || 0}
                                 onChange={(e) =>
-                                    setLocalGoals((prev) => ({
+                                    setLocalGoals((prev: UserGoals) => ({
                                         ...prev,
-                                        proteinGoal: e.target.value,
+                                        proteinGoal: Number(e.target.value),
                                     }))
                                 }
                                 className="bg-input border-border"
@@ -110,11 +112,13 @@ export function GoalsSettings() {
                                 <Input
                                     type="number"
                                     step="0.1"
-                                    value={localGoals.weightGoal}
+                                    value={localGoals.targetWeight || 0}
                                     onChange={(e) =>
                                         setLocalGoals((prev) => ({
                                             ...prev,
-                                            weightGoal: e.target.value,
+                                            targetWeight: Number(
+                                                e.target.value,
+                                            ),
                                         }))
                                     }
                                     placeholder="70.0"

@@ -1,4 +1,4 @@
-import { Routes, Pages } from '@/consts';
+import { Routes, Pages, USER_ID_HEADER } from '@/consts';
 import { AuthPayload } from '@/types';
 import { NextRequest } from 'next/server';
 
@@ -13,13 +13,15 @@ export const setPayloadHeaders = (
     request: NextRequest,
 ) => {
     const requestHeaders = new Headers(request.headers);
-    const internalFields = ['iat', 'exp', 'nbf'];
 
-    Object.entries(payload).forEach(([key, value]) => {
-        if (value && !internalFields.includes(key)) {
-            requestHeaders.set(`x-user-${key}`, String(value));
-        }
-    });
+    // const internalFields = ['iat', 'exp', 'nbf'];
+    // Object.entries(payload).forEach(([key, value]) => {
+    //     if (value && !internalFields.includes(key)) {
+    //         requestHeaders.set(`x-user-${key}`, String(value));
+    //     }
+    // });
+
+    requestHeaders.set(USER_ID_HEADER, payload.sub);
 
     return requestHeaders;
 };
@@ -37,4 +39,10 @@ export const accumulateData = <T, K extends keyof T>(
             ...newData,
         },
     };
+};
+
+export const isProtectedPage = (pathname: string) => {
+    return Routes.filter(({ isProtected }) => isProtected).find(
+        ({ path }) => pathname === path,
+    );
 };

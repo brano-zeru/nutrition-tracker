@@ -49,8 +49,6 @@ export default function LoginPage() {
                 user: UserDTO;
             }>('/api/auth/login', 'POST', data);
 
-            console.log({ user });
-
             if (user) {
                 setUser(user);
                 router.push(getRoute(Pages.HOME));
