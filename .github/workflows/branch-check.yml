@@ -1,0 +1,26 @@
+name: "Branch Naming Convention"
+
+on:
+  push:
+    branches:
+      - '*'
+      - '!main'
+      - '!master'
+
+jobs:
+  branch-name-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check branch name
+        run: |
+          PATTERN="^(feature|fix|hotfix)\/.*"
+          BRANCH_NAME="${GITHUB_REF#refs/heads/}"
+          
+          if [[ ! $BRANCH_NAME =~ $PATTERN ]]; then
+            echo "--------------------------------------------------------"
+            echo "❌ ERROR: Invalid branch name: '$BRANCH_NAME'"
+            echo "Your branch must start with: feat/, fix/ or hotfix/"
+            echo "Example: fix/ui-button or feature/liav-bitch-ass-skeleton"
+            echo "--------------------------------------------------------"
+            exit 1
+          fi
