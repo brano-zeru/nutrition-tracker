@@ -2,119 +2,90 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useQuery } from '@tanstack/react-query';
+import { useSteps } from '@/hooks/useSteps';
 import { fetchApi } from '@/services/fetchApi';
-import { accumulateData, getRoute } from '@/utils';
-import { Pages } from '@/consts';
 import { RegisterUserDTO, UserDTO } from '@/types';
 import { StepScope } from '@/app/register/register.config';
 import { useAuth } from '@/contexts/AuthContext';
-
-type FormStepData = Record<string, string | number | undefined>;
+import { Pages } from '@/consts';
+import { getRoute, accumulateData } from '@/utils';
+import { useQuery } from '@tanstack/react-query';
 
 export const useRegisterForm = (totalSteps: number) => {
-    const [stepIndex, setStepIndex] = useState(0);
-    const [registrationData, setRegistrationData] = useState<
-        Partial<RegisterUserDTO>
-    >({});
-    const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
-    const [generalError, setGeneralError] = useState<string | null>(null);
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [emailToCheck, setEmailToCheck] = useState('');
-
     const router = useRouter();
     const { setUser } = useAuth();
 
+    const {
+        stepIndex,
+        formData: registrationData,
+        fieldErrors,
+        nextStep,
+        updateData,
+        setExternalError,
+    } = useSteps<RegisterUserDTO>(totalSteps);
+
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [emailToCheck, setEmailToCheck] = useState('');
+
     const { data: emailStatus } = useQuery({
         queryKey: ['checkEmail', emailToCheck],
-        queryFn: async () => {
-            if (!emailToCheck || !emailToCheck.includes('@'))
-                return { exists: false };
-            return await fetchApi<{ exists: boolean }>(
+        queryFn: () =>
+            fetchApi<{ exists: boolean }>(
                 `/api/auth/check-email?email=${encodeURIComponent(emailToCheck)}`,
-                'GET',
-            );
-        },
-        enabled: emailToCheck.length > 0,
-        staleTime: 30000,
+            ),
+        enabled: emailToCheck.includes('@'),
     });
 
     useEffect(() => {
         if (emailStatus?.exists) {
-            setFieldErrors((prev) => ({
-                ...prev,
-                email: 'Email already in use',
-            }));
+            setExternalError('email', 'Email already in use');
         } else {
-            setFieldErrors((prev) => {
-                const { _email, ...rest } = prev;
-                return rest;
-            });
+            setExternalError('email', null);
         }
-    }, [emailStatus]);
+    }, [emailStatus, setExternalError]);
 
-    const setExternalError = (name: string, message: string | null) => {
-        setFieldErrors((prev) => {
-            if (!message) {
-                const { [name]: _, ...rest } = prev;
-                return rest;
-            }
-            return { ...prev, [name]: message };
-        });
-    };
-
-    const handleStepSubmit = async (
-        formData: FormStepData,
-        scope: StepScope,
-    ) => {
-        setGeneralError(null);
-
+    const handleStepSubmit = async (data: any, scope: StepScope) => {
         if (Object.keys(fieldErrors).length > 0) return;
 
-        const userData = accumulateData<RegisterUserDTO, StepScope>(
+        const updatedFullData = accumulateData<RegisterUserDTO, StepScope>(
             registrationData,
-            formData,
+            data,
             scope,
         );
-
-        setRegistrationData(userData);
+        updateData(updatedFullData);
 
         const isLastStep = stepIndex === totalSteps - 1;
 
         if (isLastStep) {
             setIsSubmitting(true);
             try {
-                if (userData.user) {
-                    userData.user.role = 'USER';
-                }
+                const finalData = { ...updatedFullData };
+                if (finalData.user) finalData.user.role = 'USER';
 
-                const { user } = await fetchApi<{
-                    message: string;
-                    user: UserDTO;
-                }>('/api/auth/register', 'POST', userData as RegisterUserDTO);
+                const { user } = await fetchApi<{ user: UserDTO }>(
+                    '/api/auth/register',
+                    'POST',
+                    finalData,
+                );
 
                 setUser(user);
                 router.push(getRoute(Pages.HOME));
-            } catch (error: unknown) {
-                setGeneralError(
-                    (error as Error)?.message || 'Invalid Registration Error',
-                );
+            } catch (err) {
+                console.error(err);
             } finally {
                 setIsSubmitting(false);
             }
         } else {
-            setStepIndex((prev) => prev + 1);
+            nextStep();
         }
     };
 
     return {
         stepIndex,
-        error: generalError,
         fieldErrors,
         isSubmitting,
         handleStepSubmit,
-        setExternalError,
-        registrationData,
         setEmailToCheck,
+        emailToCheck,
     };
 };

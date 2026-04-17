@@ -12,7 +12,6 @@ export const RegisterForm = () => {
     const { stepIndex, handleStepSubmit, fieldErrors, setEmailToCheck } =
         useRegisterForm(STEPS.length);
 
-    // סטייטים לסנכרון הקלדה (מניעת שיבושים)
     const [emailValue, setEmailValue] = useState('');
     const [debouncedEmail, setDebouncedEmail] = useState('');
 

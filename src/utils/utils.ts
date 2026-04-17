@@ -14,13 +14,6 @@ export const setPayloadHeaders = (
 ) => {
     const requestHeaders = new Headers(request.headers);
 
-    // const internalFields = ['iat', 'exp', 'nbf'];
-    // Object.entries(payload).forEach(([key, value]) => {
-    //     if (value && !internalFields.includes(key)) {
-    //         requestHeaders.set(`x-user-${key}`, String(value));
-    //     }
-    // });
-
     requestHeaders.set(USER_ID_HEADER, payload.sub);
 
     return requestHeaders;

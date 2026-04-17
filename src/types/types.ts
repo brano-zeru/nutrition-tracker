@@ -73,19 +73,3 @@ export type UserGoals = Pick<
     ProfileDTO,
     'targetWeight' | 'calorieGoal' | 'proteinGoal'
 >;
-
-// type StepActionResponse = {
-//     userId?: string;
-//     success: boolean;
-// };
-
-// interface FormStep {
-//     id: string;
-//     title: string;
-//     description: string;
-//     schema: z.ZodSchema<any>;
-//     fields: { name: string; label: string; type: string; placeholder: string }[];
-//     submitLabel: string;
-//     // הפונקציה שמבצעת את הקריאה ל-API
-//     action: (data: any, userId: string | null) => Promise<StepActionResponse>;
-// }
