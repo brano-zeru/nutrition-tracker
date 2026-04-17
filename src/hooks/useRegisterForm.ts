@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useQuery } from '@tanstack/react-query';
 import { fetchApi } from '@/services/fetchApi';
 import { accumulateData, getRoute } from '@/utils';
 import { Pages } from '@/consts';
@@ -16,15 +17,41 @@ export const useRegisterForm = (totalSteps: number) => {
     const [registrationData, setRegistrationData] = useState<
         Partial<RegisterUserDTO>
     >({});
-
     const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
     const [generalError, setGeneralError] = useState<string | null>(null);
-
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [isValidating, setIsValidating] = useState(false);
+    const [emailToCheck, setEmailToCheck] = useState('');
 
     const router = useRouter();
     const { setUser } = useAuth();
+
+    const { data: emailStatus } = useQuery({
+        queryKey: ['checkEmail', emailToCheck],
+        queryFn: async () => {
+            if (!emailToCheck || !emailToCheck.includes('@'))
+                return { exists: false };
+            return await fetchApi<{ exists: boolean }>(
+                `/api/auth/check-email?email=${encodeURIComponent(emailToCheck)}`,
+                'GET',
+            );
+        },
+        enabled: emailToCheck.length > 0,
+        staleTime: 30000,
+    });
+
+    useEffect(() => {
+        if (emailStatus?.exists) {
+            setFieldErrors((prev) => ({
+                ...prev,
+                email: 'Email already in use',
+            }));
+        } else {
+            setFieldErrors((prev) => {
+                const { _email, ...rest } = prev;
+                return rest;
+            });
+        }
+    }, [emailStatus]);
 
     const setExternalError = (name: string, message: string | null) => {
         setFieldErrors((prev) => {
@@ -88,7 +115,6 @@ export const useRegisterForm = (totalSteps: number) => {
         handleStepSubmit,
         setExternalError,
         registrationData,
-        isValidating,
-        setIsValidating,
+        setEmailToCheck,
     };
 };
