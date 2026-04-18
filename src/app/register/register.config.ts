@@ -10,17 +10,42 @@ export const profileSchema = z.object({
     age: z.coerce.number().min(13, 'Must be at least 13'),
     height: z.coerce.number().min(100, 'Invalid height'),
     weight: z.coerce.number().min(30, 'Invalid weight'),
-    targetWeight: z.coerce.number().optional(),
+});
+
+export const goalsSchema = z.object({
+    targetWeight: z.coerce
+        .number()
+        .min(
+            30,
+            'What are you a bitch ass holocaust surviour? please enter a real value',
+        )
+        .max(
+            100,
+            "Wow come down buddy you're gonna break the floor with your fat ass",
+        ),
+    targetCalories: z.coerce.number().min(40),
 });
 
 export type StepScope = 'user' | 'profile';
 
-interface FormField {
+type BaseField = {
     name: string;
     label: string;
     type: string;
+    options?: { label: string; value: string }[];
+};
+
+type StaticPlaceholderField = BaseField & {
     placeholder: string;
-}
+    dynamicPlaceholder?: never;
+};
+
+type DynamicPlaceholderField = BaseField & {
+    dynamicPlaceholder: (val: string) => string;
+    placeholder?: never;
+};
+
+type FormField = StaticPlaceholderField | DynamicPlaceholderField;
 
 export interface FormStep {
     id: string;
@@ -68,11 +93,16 @@ export const STEPS: FormStep[] = [
         scope: 'profile',
         title: 'Tell us about yourself',
         description: 'Step 2: Nutrition Profile',
-        submitLabel: 'Finish & Start',
-        isSubmittingLabel: 'Creating account...',
+        submitLabel: 'Next: Your Goals',
+        isSubmittingLabel: 'Saving...',
         schema: profileSchema,
         fields: [
-            { name: 'age', label: 'Age', type: 'number', placeholder: '25' },
+            {
+                name: 'age',
+                label: 'Age',
+                type: 'number',
+                placeholder: '25',
+            },
             {
                 name: 'height',
                 label: 'Height (cm)',
@@ -86,10 +116,61 @@ export const STEPS: FormStep[] = [
                 placeholder: '75',
             },
             {
+                name: 'activityLevel',
+                label: 'Activity Level',
+                type: 'select',
+                placeholder: 'Select activity level',
+                options: [
+                    { label: 'Sedentary (Office job)', value: 'SEDENTARY' },
+                    {
+                        label: 'Lightly Active (1-2 workouts/week)',
+                        value: 'LIGHTLY_ACTIVE',
+                    },
+                    {
+                        label: 'Moderately Active (3-5 workouts/week)',
+                        value: 'MODERATELY_ACTIVE',
+                    },
+                    {
+                        label: 'Very Active (Daily workouts)',
+                        value: 'VERY_ACTIVE',
+                    },
+                    {
+                        label: 'Extra Active (Professional athlete)',
+                        value: 'EXTRA_ACTIVE',
+                    },
+                ],
+            },
+        ],
+    },
+    {
+        id: 'goals',
+        scope: 'profile',
+        title: 'Define your goals (optional)',
+        description: 'Last step: goals',
+        submitLabel: 'Finish & Start',
+        isSubmittingLabel: 'Creating account...',
+        schema: goalsSchema,
+        fields: [
+            {
                 name: 'targetWeight',
-                label: 'Target Weight',
+                label: 'Target Weight (kg)',
                 type: 'number',
-                placeholder: '70',
+                dynamicPlaceholder: (weight: string) =>
+                    `${weight} (recommended for you)`,
+            },
+            {
+                name: 'targetCalories',
+                label: 'Target Calories (per day)',
+                type: 'number',
+                dynamicPlaceholder: (calories: string) =>
+                    `${calories} (recommended for you)`,
+            },
+            {
+                name: 'targetProteins',
+                label: 'Target Proteins (per day)',
+                type: 'number',
+                dynamicPlaceholder: (proteins: string) =>
+                    `${proteins} (recommended for you)`,
             },
         ],
     },

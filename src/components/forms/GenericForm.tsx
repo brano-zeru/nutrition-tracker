@@ -2,16 +2,24 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as Label from '@radix-ui/react-label';
-import { DefaultValues, FieldValues, Path, useForm } from 'react-hook-form';
+import {
+    DefaultValues,
+    FieldValues,
+    Path,
+    PathValue,
+    useForm,
+} from 'react-hook-form';
 import * as z from 'zod';
 import { Button } from '@/components/ui/button';
 import { useEffect } from 'react';
+import { FancyDropdown } from '../FancyDropdown';
 
 interface FormField<T> {
     name: Path<T>;
     label: string;
     type: string;
     placeholder?: string;
+    options?: { label: string; value: string }[];
 }
 
 interface GenericFormProps<TFieldValues extends FieldValues> {
@@ -49,6 +57,7 @@ export function GenericForm<TFieldValues extends FieldValues>({
         watch,
         setError,
         formState: { errors, isSubmitting },
+        setValue,
     } = useForm<TFieldValues>({
         mode: 'onChange',
         resolver: zodResolver(schema),
@@ -100,18 +109,37 @@ export function GenericForm<TFieldValues extends FieldValues>({
                         >
                             {field.label}
                         </Label.Root>
-
-                        <input
-                            {...register(field.name)}
-                            id={field.name as string}
-                            type={field.type}
-                            placeholder={field.placeholder}
-                            className={`mt-1 flex h-11 w-full rounded-lg border bg-zinc-950 px-4 py-2 text-sm text-zinc-100 placeholder:text-zinc-700 transition-all focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-900 ${
-                                errors[field.name]
-                                    ? 'border-red-500/40 focus-visible:ring-red-500/50'
-                                    : 'border-zinc-800 focus-visible:ring-emerald-600/50'
-                            }`}
-                        />
+                        {field.type === 'select' ? (
+                            <FancyDropdown
+                                value={watch(field.name)}
+                                onValueChange={(val) => {
+                                    setValue(
+                                        field.name,
+                                        val as PathValue<
+                                            TFieldValues,
+                                            Path<TFieldValues>
+                                        >,
+                                        { shouldValidate: true },
+                                    );
+                                    onFieldChange?.(field.name as string, val);
+                                }}
+                                options={field.options || []}
+                                placeholder={field.placeholder}
+                                error={errors[field.name]?.message as string}
+                            />
+                        ) : (
+                            <input
+                                {...register(field.name)}
+                                id={field.name as string}
+                                type={field.type}
+                                placeholder={field.placeholder}
+                                className={`mt-1 flex h-11 w-full rounded-lg border bg-zinc-950 px-4 py-2 text-sm text-zinc-100 placeholder:text-zinc-700 transition-all focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-900 ${
+                                    errors[field.name]
+                                        ? 'border-red-500/40 focus-visible:ring-red-500/50'
+                                        : 'border-zinc-800 focus-visible:ring-emerald-600/50'
+                                }`}
+                            />
+                        )}
 
                         <div className="h-6 flex items-center px-1">
                             {errors[field.name] && (

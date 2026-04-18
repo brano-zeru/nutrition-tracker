@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { Scale, TrendingDown, Plus } from 'lucide-react';
-import { useNutrition } from '@/contexts/nutritionContext'; // וודא שהנתיב נכון
 import { Button } from './ui/button';
 import {
     Dialog,
@@ -11,6 +10,7 @@ import {
     DialogFooter,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
+import { useProfile } from '@/hooks/useProfile';
 
 const WeightDialog = ({
     currentWeight,
@@ -94,25 +94,23 @@ const WeightDialog = ({
     );
 };
 
-export const WeightMiniCard = ({
-    initialWeight,
-    trend,
-}: {
-    initialWeight?: number;
-    trend: number;
-}) => {
-    const { goals } = useNutrition();
-    const [currentWeight, setCurrentWeight] = useState(initialWeight || 0);
+export const WeightMiniCard = () => {
+    const { goals, profile, isLoading } = useProfile();
+    const weight = profile?.weight || 0;
+    const [currentWeight, setCurrentWeight] = useState(weight || 0);
 
     useEffect(() => {
-        if (initialWeight !== undefined) {
-            setCurrentWeight(initialWeight);
+        if (weight !== undefined) {
+            setCurrentWeight(weight);
         }
-    }, [initialWeight]);
+    }, [weight]);
 
     const handleWeightUpdate = (newWeight: number) => {
         setCurrentWeight(newWeight);
     };
+
+    //should be replaced with a skeleton loader
+    if (isLoading || !goals) return <></>;
 
     return (
         <div className="bg-zinc-900/50 border border-white/5 rounded-2xl p-4 flex items-center justify-between group hover:border-emerald-500/30 transition-all duration-500">
@@ -142,7 +140,7 @@ export const WeightMiniCard = ({
                         Target
                     </p>
                     <p className="text-sm font-bold text-zinc-300 italic">
-                        {goals.weightGoal || 0}kg
+                        {goals.targetWeight || 0}kg
                     </p>
                 </div>
                 <div className="flex flex-col items-center">
@@ -151,7 +149,7 @@ export const WeightMiniCard = ({
                     </p>
                     <div className="flex items-center gap-1 text-emerald-500 text-xs font-black">
                         <TrendingDown className="w-3.5 h-3.5" />
-                        <span>{trend}kg</span>
+                        <span>{0}kg</span>
                     </div>
                 </div>
             </div>

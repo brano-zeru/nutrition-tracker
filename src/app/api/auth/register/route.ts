@@ -2,9 +2,9 @@ import { AUTH_COOKIE_NAME } from '@/consts';
 import { signToken } from '@/lib/auth';
 import { AuthService } from '@/services/auth.service';
 import { RegisterUserDTO } from '@/types';
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
     try {
         const { user, profile } = await req.json();
 

@@ -1,4 +1,4 @@
-import { User as PrismaUser, Profile as PrismaProfile } from '@prisma/client';
+import { ActivityLevel } from '@prisma/client';
 
 export interface FoodEntry {
     id: string;
@@ -30,6 +30,7 @@ export interface NutritionGoals {
 }
 
 import { ReactNode } from 'react';
+import { UserDTO } from './dto';
 
 export const enum tabKeys {
     DASHBOARD = 'dashboard',
@@ -44,18 +45,6 @@ export interface Tab {
     classNames: string;
 }
 
-export type UserDTO = Pick<PrismaUser, 'id' | 'email' | 'role' | 'fullName'>;
-
-export type ProfileDTO = Pick<
-    PrismaProfile,
-    'age' | 'height' | 'weight' | 'targetWeight' | 'calorieGoal' | 'proteinGoal'
->;
-
-export interface UserDetails {
-    user: UserDTO;
-    profile: ProfileDTO;
-}
-
 export interface AuthPayload {
     sub: UserDTO['id'];
     user: UserDTO;
@@ -63,13 +52,9 @@ export interface AuthPayload {
     exp: number;
 }
 
-export interface RegisterUserDTO extends Omit<UserDetails, 'user'> {
-    user: Omit<UserDTO, 'id'> & {
-        password: string;
-    };
+export interface CalculationParams {
+    weight: number;
+    height: number;
+    age: number;
+    activityLevel: ActivityLevel;
 }
-
-export type UserGoals = Pick<
-    ProfileDTO,
-    'targetWeight' | 'calorieGoal' | 'proteinGoal'
->;
