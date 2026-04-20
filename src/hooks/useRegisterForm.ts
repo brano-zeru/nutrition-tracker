@@ -4,12 +4,12 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSteps } from '@/hooks/useSteps';
 import { fetchApi } from '@/services/fetchApi';
-import { RegisterUserDTO, UserDTO } from '@/types';
 import { StepScope } from '@/app/register/register.config';
 import { useAuth } from '@/contexts/AuthContext';
 import { Pages } from '@/consts';
 import { getRoute, accumulateData } from '@/utils';
 import { useQuery } from '@tanstack/react-query';
+import { RegisterUserDTO, UserDTO } from '@/types/dto';
 
 export const useRegisterForm = (totalSteps: number) => {
     const router = useRouter();
@@ -37,12 +37,15 @@ export const useRegisterForm = (totalSteps: number) => {
     });
 
     useEffect(() => {
-        if (emailStatus?.exists) {
+        const isCurrentlyInUse = emailStatus?.exists;
+        const hasErrorAlready = fieldErrors['email'];
+
+        if (isCurrentlyInUse && !hasErrorAlready) {
             setExternalError('email', 'Email already in use');
-        } else {
+        } else if (!isCurrentlyInUse && hasErrorAlready) {
             setExternalError('email', null);
         }
-    }, [emailStatus, setExternalError]);
+    }, [emailStatus?.exists, setExternalError, fieldErrors]);
 
     const handleStepSubmit = async (data: any, scope: StepScope) => {
         if (Object.keys(fieldErrors).length > 0) return;
@@ -87,5 +90,6 @@ export const useRegisterForm = (totalSteps: number) => {
         handleStepSubmit,
         setEmailToCheck,
         emailToCheck,
+        registrationData,
     };
 };

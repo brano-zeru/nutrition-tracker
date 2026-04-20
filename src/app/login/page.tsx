@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation';
 import { Pages } from '@/consts';
 import { getRoute } from '@/utils';
 import { UserDTO } from '@/types';
-import { GenericForm } from '@/components/GenericForm';
+import { GenericForm } from '@/components/forms/GenericForm';
 import { useAuth } from '@/contexts/AuthContext';
 
 const loginSchema = z.object({

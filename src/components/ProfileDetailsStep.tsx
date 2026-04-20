@@ -1,7 +1,7 @@
 'use client';
 
 import * as z from 'zod';
-import { GenericForm } from './GenericForm';
+import { GenericForm } from './forms/GenericForm';
 
 export const profileSchema = z.object({
     age: z.coerce.number().min(13, 'מינימום גיל 13'),

@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -14,44 +15,48 @@ import {
     DialogClose,
 } from '@/components/ui/dialog';
 import { FieldGroup, Field, FieldLabel } from '@/components/ui/field';
-import { Settings, Target, Scale } from 'lucide-react';
+import { Settings, Target, Scale, Loader2 } from 'lucide-react';
 import { UserGoals } from '@/types';
 import { useProfile } from '@/hooks/useProfile';
 
 export function GoalsSettings() {
     const [isOpen, setIsOpen] = useState(false);
+    const { profile, updateProfile, isUpdating } = useProfile();
 
-    const { data: profile } = useProfile();
-
-    const [localGoals, setLocalGoals] = useState<UserGoals>({
-        calorieGoal: 0,
-        proteinGoal: 0,
-        targetWeight: 0,
+    const {
+        register,
+        handleSubmit,
+        reset,
+        formState: { isDirty },
+    } = useForm<UserGoals>({
+        defaultValues: {
+            calorieGoal: 0,
+            proteinGoal: 0,
+            targetWeight: 0,
+        },
     });
 
     useEffect(() => {
         if (profile) {
-            setLocalGoals(() => ({
+            reset({
                 calorieGoal: profile.calorieGoal || 0,
                 proteinGoal: profile.proteinGoal || 0,
                 targetWeight: profile.targetWeight || 0,
-            }));
+            });
         }
-    }, [profile]);
+    }, [profile, reset]);
 
-    const handleOpen = (open: boolean) => {
-        if (open) {
+    const onSubmit = async (data: UserGoals) => {
+        try {
+            await updateProfile(data);
+            setIsOpen(false);
+        } catch (error) {
+            console.error('Failed to save goals:', error);
         }
-        setIsOpen(open);
-    };
-
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        setIsOpen(false);
     };
 
     return (
-        <Dialog open={isOpen} onOpenChange={handleOpen}>
+        <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
                 <Button
                     variant="outline"
@@ -61,6 +66,7 @@ export function GoalsSettings() {
                     <Settings className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                 </Button>
             </DialogTrigger>
+
             <DialogContent className="bg-card border-border max-w-[calc(100%-2rem)] sm:max-w-md">
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2 text-base sm:text-lg">
@@ -71,19 +77,16 @@ export function GoalsSettings() {
                         Set your daily targets and body weight goal.
                     </DialogDescription>
                 </DialogHeader>
-                <form onSubmit={handleSubmit}>
+
+                <form onSubmit={handleSubmit(onSubmit)}>
                     <FieldGroup className="gap-3 sm:gap-4">
                         <Field>
                             <FieldLabel>Daily Calorie Goal</FieldLabel>
                             <Input
+                                {...register('calorieGoal', {
+                                    valueAsNumber: true,
+                                })}
                                 type="number"
-                                value={localGoals.calorieGoal || 0}
-                                onChange={(e) =>
-                                    setLocalGoals((prev: UserGoals) => ({
-                                        ...prev,
-                                        calorieGoal: Number(e.target.value),
-                                    }))
-                                }
                                 className="bg-input border-border"
                             />
                         </Field>
@@ -91,14 +94,10 @@ export function GoalsSettings() {
                         <Field>
                             <FieldLabel>Daily Protein Goal (grams)</FieldLabel>
                             <Input
+                                {...register('proteinGoal', {
+                                    valueAsNumber: true,
+                                })}
                                 type="number"
-                                value={localGoals.proteinGoal || 0}
-                                onChange={(e) =>
-                                    setLocalGoals((prev: UserGoals) => ({
-                                        ...prev,
-                                        proteinGoal: Number(e.target.value),
-                                    }))
-                                }
                                 className="bg-input border-border"
                             />
                         </Field>
@@ -110,17 +109,11 @@ export function GoalsSettings() {
                                     Target Weight (kg)
                                 </FieldLabel>
                                 <Input
+                                    {...register('targetWeight', {
+                                        valueAsNumber: true,
+                                    })}
                                     type="number"
                                     step="0.1"
-                                    value={localGoals.targetWeight || 0}
-                                    onChange={(e) =>
-                                        setLocalGoals((prev) => ({
-                                            ...prev,
-                                            targetWeight: Number(
-                                                e.target.value,
-                                            ),
-                                        }))
-                                    }
                                     placeholder="70.0"
                                     className="bg-input border-border"
                                 />
@@ -130,15 +123,24 @@ export function GoalsSettings() {
 
                     <DialogFooter className="mt-4 sm:mt-6">
                         <DialogClose asChild>
-                            <Button variant="outline" type="button">
+                            <Button
+                                variant="outline"
+                                type="button"
+                                disabled={isUpdating}
+                            >
                                 Cancel
                             </Button>
                         </DialogClose>
                         <Button
                             type="submit"
-                            className="bg-primary text-primary-foreground font-bold shadow-lg shadow-primary/20"
+                            disabled={isUpdating || !isDirty}
+                            className="bg-primary text-primary-foreground font-bold shadow-lg shadow-primary/20 min-w-[100px]"
                         >
-                            Save Goals
+                            {isUpdating ? (
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                                'Save Goals'
+                            )}
                         </Button>
                     </DialogFooter>
                 </form>
