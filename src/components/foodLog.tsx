@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { useNutrition } from '@/contexts/nutritionContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -24,12 +23,25 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
-import { Plus, Trash2, UtensilsCrossed, Copy } from 'lucide-react';
+import {
+    Plus,
+    Trash2,
+    UtensilsCrossed,
+    Loader2,
+    BicepsFlexed,
+} from 'lucide-react';
 import { FieldGroup, Field, FieldLabel } from '@/components/ui/field';
 import { FoodEntry } from '@/types/types';
+import { useFoodLogs } from '@/hooks/useFoodLogs';
 
 export function FoodLog() {
-    const { getCurrentDayLog, addFoodEntry, removeFoodEntry } = useNutrition();
+    const {
+        currentDayFoodLogEntries,
+        refechFoodLogEntries,
+        saveFoodLogEntry,
+        isFetchingFoodLogs,
+        deleteFoodLogEntry,
+    } = useFoodLogs();
     const [isAddOpen, setIsAddOpen] = useState(false);
     const [duplicateEntry, setDuplicateEntry] = useState<FoodEntry | null>(
         null,
@@ -42,21 +54,18 @@ export function FoodLog() {
         notes: '',
     });
 
-    const currentLog = getCurrentDayLog();
-    const entries = currentLog.entries;
-
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!newEntry.name || !newEntry.calories) return;
 
-        addFoodEntry({
+        await saveFoodLogEntry({
             name: newEntry.name,
             calories: parseInt(newEntry.calories) || 0,
             protein: parseFloat(newEntry.protein) || 0,
             notes: newEntry.notes,
         });
+        await refechFoodLogEntries();
 
-        setNewEntry({ name: '', calories: '', protein: '', notes: '' });
         setIsAddOpen(false);
     };
 
@@ -65,10 +74,11 @@ export function FoodLog() {
         setDuplicateMultiplier('1');
     };
 
-    const confirmDuplicate = () => {
+    const confirmDuplicate = async () => {
         if (duplicateEntry) {
             const multiplier = parseFloat(duplicateMultiplier) || 1;
-            addFoodEntry({
+
+            await saveFoodLogEntry({
                 name: duplicateEntry.name,
                 calories: Math.round(duplicateEntry.calories * multiplier),
                 protein:
@@ -78,6 +88,8 @@ export function FoodLog() {
                         ? `${multiplier}x portion`
                         : duplicateEntry.notes,
             });
+            await refechFoodLogEntries();
+
             setDuplicateEntry(null);
         }
     };
@@ -199,7 +211,17 @@ export function FoodLog() {
                 </Dialog>
             </CardHeader>
             <CardContent className="px-3 sm:px-6">
-                {entries.length === 0 ? (
+                {isFetchingFoodLogs ? (
+                    <div className="flex flex-col items-center justify-center py-8 sm:py-12 text-center">
+                        <div className="rounded-full bg-secondary p-3 sm:p-4 mb-3 sm:mb-4">
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                        </div>
+                        <p className="text-muted-foreground text-xs sm:text-sm">
+                            Loading...
+                        </p>
+                    </div>
+                ) : currentDayFoodLogEntries &&
+                  currentDayFoodLogEntries.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-8 sm:py-12 text-center">
                         <div className="rounded-full bg-secondary p-3 sm:p-4 mb-3 sm:mb-4">
                             <UtensilsCrossed className="h-6 w-6 sm:h-8 sm:w-8 text-muted-foreground" />
@@ -215,58 +237,65 @@ export function FoodLog() {
                     <>
                         {/* Mobile View - Card Layout */}
                         <div className="sm:hidden space-y-2">
-                            {entries.map((entry) => (
-                                <div
-                                    key={entry.id}
-                                    className="bg-secondary/30 rounded-lg p-3 border border-border/30"
-                                >
-                                    <div className="flex items-start justify-between gap-2 mb-2">
-                                        <div className="min-w-0 flex-1">
-                                            <p className="font-medium text-sm truncate">
-                                                {entry.name}
-                                            </p>
-                                            <p className="text-[10px] text-muted-foreground">
-                                                {formatTime(entry.timestamp)}
-                                            </p>
+                            {currentDayFoodLogEntries?.map(
+                                (entry: FoodEntry) => (
+                                    <div
+                                        key={entry.id}
+                                        className="bg-secondary/30 rounded-lg p-3 border border-border/30"
+                                    >
+                                        <div className="flex items-start justify-between gap-2 mb-2">
+                                            <div className="min-w-0 flex-1">
+                                                <p className="font-medium text-sm truncate">
+                                                    {entry.name}
+                                                </p>
+                                                <p className="text-[10px] text-muted-foreground">
+                                                    {formatTime(
+                                                        entry.timestamp,
+                                                    )}
+                                                </p>
+                                            </div>
+                                            <div className="flex items-center gap-1">
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    onClick={() =>
+                                                        handleDuplicate(entry)
+                                                    }
+                                                    className="h-7 w-7 text-muted-foreground hover:text-primary"
+                                                >
+                                                    <BicepsFlexed className="h-3.5 w-3.5" />
+                                                </Button>
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    onClick={async () => {
+                                                        await deleteFoodLogEntry(
+                                                            entry.id,
+                                                        );
+                                                        await refechFoodLogEntries();
+                                                    }}
+                                                    className="h-7 w-7 text-muted-foreground hover:text-destructive"
+                                                >
+                                                    <Trash2 className="h-3.5 w-3.5" />
+                                                </Button>
+                                            </div>
                                         </div>
-                                        <div className="flex items-center gap-1">
-                                            <Button
-                                                variant="ghost"
-                                                size="icon"
-                                                onClick={() =>
-                                                    handleDuplicate(entry)
-                                                }
-                                                className="h-7 w-7 text-muted-foreground hover:text-primary"
-                                            >
-                                                <Copy className="h-3.5 w-3.5" />
-                                            </Button>
-                                            <Button
-                                                variant="ghost"
-                                                size="icon"
-                                                onClick={() =>
-                                                    removeFoodEntry(entry.id)
-                                                }
-                                                className="h-7 w-7 text-muted-foreground hover:text-destructive"
-                                            >
-                                                <Trash2 className="h-3.5 w-3.5" />
-                                            </Button>
+                                        <div className="flex items-center gap-3 text-xs">
+                                            <span className="text-calories font-mono">
+                                                {entry.calories} cal
+                                            </span>
+                                            <span className="text-protein font-mono">
+                                                {entry.protein}g protein
+                                            </span>
                                         </div>
+                                        {entry.notes && (
+                                            <p className="text-[10px] text-muted-foreground mt-1.5">
+                                                {entry.notes}
+                                            </p>
+                                        )}
                                     </div>
-                                    <div className="flex items-center gap-3 text-xs">
-                                        <span className="text-calories font-mono">
-                                            {entry.calories} cal
-                                        </span>
-                                        <span className="text-protein font-mono">
-                                            {entry.protein}g protein
-                                        </span>
-                                    </div>
-                                    {entry.notes && (
-                                        <p className="text-[10px] text-muted-foreground mt-1.5">
-                                            {entry.notes}
-                                        </p>
-                                    )}
-                                </div>
-                            ))}
+                                ),
+                            )}
                         </div>
 
                         {/* Desktop View - Table Layout */}
@@ -290,63 +319,68 @@ export function FoodLog() {
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                    {entries.map((entry) => (
-                                        <TableRow
-                                            key={entry.id}
-                                            className="border-border/50 hover:bg-secondary/30"
-                                        >
-                                            <TableCell className="text-muted-foreground text-sm">
-                                                {formatTime(entry.timestamp)}
-                                            </TableCell>
-                                            <TableCell>
-                                                <div>
-                                                    <p className="font-medium">
-                                                        {entry.name}
-                                                    </p>
-                                                    {entry.notes && (
-                                                        <p className="text-xs text-muted-foreground">
-                                                            {entry.notes}
-                                                        </p>
+                                    {currentDayFoodLogEntries?.map(
+                                        (entry: FoodEntry) => (
+                                            <TableRow
+                                                key={entry.id}
+                                                className="border-border/50 hover:bg-secondary/30"
+                                            >
+                                                <TableCell className="text-muted-foreground text-sm">
+                                                    {formatTime(
+                                                        entry.timestamp,
                                                     )}
-                                                </div>
-                                            </TableCell>
-                                            <TableCell className="text-right font-mono text-calories">
-                                                {entry.calories}
-                                            </TableCell>
-                                            <TableCell className="text-right font-mono text-protein">
-                                                {entry.protein}g
-                                            </TableCell>
-                                            <TableCell>
-                                                <div className="flex items-center justify-end gap-1">
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="icon"
-                                                        onClick={() =>
-                                                            handleDuplicate(
-                                                                entry,
-                                                            )
-                                                        }
-                                                        className="h-8 w-8 text-muted-foreground hover:text-primary"
-                                                        title="Add again"
-                                                    >
-                                                        <Copy className="h-4 w-4" />
-                                                    </Button>
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="icon"
-                                                        onClick={() =>
-                                                            removeFoodEntry(
-                                                                entry.id,
-                                                            )
-                                                        }
-                                                        className="h-8 w-8 text-muted-foreground hover:text-destructive"
-                                                    >
-                                                        <Trash2 className="h-4 w-4" />
-                                                    </Button>
-                                                </div>
-                                            </TableCell>
-                                        </TableRow>
-                                    ))}
+                                                </TableCell>
+                                                <TableCell>
+                                                    <div>
+                                                        <p className="font-medium">
+                                                            {entry.name}
+                                                        </p>
+                                                        {entry.notes && (
+                                                            <p className="text-xs text-muted-foreground">
+                                                                {entry.notes}
+                                                            </p>
+                                                        )}
+                                                    </div>
+                                                </TableCell>
+                                                <TableCell className="text-right font-mono text-calories">
+                                                    {entry.calories}
+                                                </TableCell>
+                                                <TableCell className="text-right font-mono text-protein">
+                                                    {entry.protein}g
+                                                </TableCell>
+                                                <TableCell>
+                                                    <div className="flex items-center justify-end gap-1">
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="icon"
+                                                            onClick={() =>
+                                                                handleDuplicate(
+                                                                    entry,
+                                                                )
+                                                            }
+                                                            className="h-8 w-8 text-muted-foreground hover:text-primary"
+                                                            title="Add again"
+                                                        >
+                                                            <BicepsFlexed className="h-4 w-4" />
+                                                        </Button>
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="icon"
+                                                            onClick={async () => {
+                                                                await deleteFoodLogEntry(
+                                                                    entry.id,
+                                                                );
+                                                                await refechFoodLogEntries();
+                                                            }}
+                                                            className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                                                        >
+                                                            <Trash2 className="h-4 w-4" />
+                                                        </Button>
+                                                    </div>
+                                                </TableCell>
+                                            </TableRow>
+                                        ),
+                                    )}
                                 </TableBody>
                             </Table>
                         </div>
