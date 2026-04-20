@@ -1,15 +1,12 @@
 import { USER_ID_HEADER } from '@/consts';
 import { FoodLogsService } from '@/services/foodLogs.service';
-import { FoodEntry } from '@/types/dto';
+import { FoodEntryDTO } from '@/types/dto';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(request: NextRequest) {
     try {
         const userId = request.headers.get(USER_ID_HEADER);
-        const data = (await request.json()) as Omit<
-            FoodEntry,
-            'id' | 'timestamp'
-        >;
+        const data = (await request.json()) as FoodEntryDTO;
 
         if (!userId) {
             return NextResponse.json(
