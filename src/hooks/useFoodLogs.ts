@@ -2,20 +2,11 @@ import { useNutrition } from '@/contexts/nutritionContext';
 import { getDateString } from '@/contexts/nutritionStore';
 import { fetchApi } from '@/services/fetchApi';
 import { FoodEntry, FoodEntryDTO } from '@/types/dto';
-import {
-    QueryObserverResult,
-    RefetchOptions,
-    useMutation,
-    useQuery,
-    useQueryClient,
-} from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 interface useFoodLogsValue {
     currentDayFoodLogEntries: FoodEntry[] | undefined;
     saveFoodLogEntry: (entry: FoodEntryDTO) => Promise<FoodEntry>;
-    refechFoodLogEntries: (
-        options?: RefetchOptions | undefined,
-    ) => Promise<QueryObserverResult<FoodEntry[], Error>>;
     isFetchingFoodLogs: boolean;
     deleteFoodLogEntry: (id: string) => Promise<void>;
 }
@@ -56,7 +47,6 @@ export const useFoodLogs = (): useFoodLogsValue => {
     return {
         currentDayFoodLogEntries: foodLogsGetter.data,
         saveFoodLogEntry: foodLogsSetter.mutateAsync,
-        refechFoodLogEntries: foodLogsGetter.refetch,
         isFetchingFoodLogs: foodLogsGetter.isFetching,
         deleteFoodLogEntry: foodLogRemover.mutateAsync,
     };
