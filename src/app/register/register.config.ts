@@ -15,15 +15,16 @@ export const profileSchema = z.object({
 export const goalsSchema = z.object({
     targetWeight: z.coerce
         .number()
-        .min(
-            30,
-            'What are you a bitch ass holocaust surviour? please enter a real value',
-        )
-        .max(
-            100,
-            "Wow come down buddy you're gonna break the floor with your fat ass",
-        ),
-    targetCalories: z.coerce.number().min(40),
+        .min(30, 'invalid weight')
+        .max(200, 'invalid weight'),
+    targetProteins: z.coerce
+        .number()
+        .min(40, 'invalid proteins amount')
+        .max(500, 'invalid proteins amount'),
+    targetCalories: z.coerce
+        .number()
+        .min(400, 'invalid calories amount')
+        .max(5000, 'invalid calories amount'),
 });
 
 export type StepScope = 'user' | 'profile';
