@@ -4,12 +4,17 @@ import { useNutrition } from '@/contexts/nutritionContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Flame, Dumbbell } from 'lucide-react';
 import { ProgressStat } from './ProgressStat';
+import { useProfile } from '@/hooks/useProfile';
 
 export function DailyProgress() {
-    const { getTotalCalories, getTotalProtein, goals } = useNutrition();
+    const { getTotalCalories, getTotalProtein } = useNutrition();
+    const { goals, isLoading } = useProfile();
 
     const calories = getTotalCalories();
     const protein = getTotalProtein();
+
+    //should be replaced with a skeleton loader
+    if (isLoading || !goals) return <></>;
 
     return (
         <Card className="border-border/50 bg-card">

@@ -1,6 +1,8 @@
+type METHOD = 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE';
+
 export async function fetchApi<T>(
     url: string,
-    method: 'GET' | 'POST' | 'DELETE' = 'GET',
+    method: METHOD = 'GET',
     body?: object,
 ): Promise<T> {
     const defaultHeaders = {

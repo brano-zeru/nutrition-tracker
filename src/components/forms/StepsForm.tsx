@@ -2,7 +2,7 @@
 
 import { ProgressBar } from '@/app/register/ProgressBar';
 import { FormStep } from '@/app/register/register.config';
-import { GenericForm } from '@/components/GenericForm';
+import { GenericForm } from '@/components/forms/GenericForm';
 import { FieldValues } from 'react-hook-form';
 
 interface StepsFormProps<T extends FieldValues> {
@@ -12,6 +12,7 @@ interface StepsFormProps<T extends FieldValues> {
     externalErrors?: Record<string, string>;
     isLoading?: boolean;
     onFieldChange?: (name: string, value: any) => void;
+    onProcessFields?: (fields: FormStep['fields']) => FormStep['fields'];
 }
 
 export function StepsForm<T extends FieldValues>({
@@ -21,8 +22,13 @@ export function StepsForm<T extends FieldValues>({
     externalErrors,
     isLoading,
     onFieldChange,
+    onProcessFields,
 }: StepsFormProps<T>) {
     const currentStep = steps[currentStepIndex];
+
+    const fieldsToRender = onProcessFields
+        ? onProcessFields(currentStep.fields)
+        : currentStep.fields;
 
     return (
         <div className="flex flex-col gap-8 w-full max-w-md">
@@ -31,6 +37,7 @@ export function StepsForm<T extends FieldValues>({
             <GenericForm
                 key={currentStep.id}
                 {...currentStep}
+                fields={fieldsToRender}
                 externalErrors={externalErrors}
                 isExternalLoading={isLoading}
                 onFieldChange={onFieldChange}

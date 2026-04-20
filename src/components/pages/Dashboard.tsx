@@ -27,11 +27,7 @@ export const Dashboard = () => {
             <DashboardHeader />
             <div className="flex flex-col gap-6">
                 <DailyProgress />
-                <WeightMiniCard
-                    currentWeight={60.0}
-                    targetWeight={70.0}
-                    trend="-0.4"
-                />
+                <WeightMiniCard />
                 <FoodLog />
             </div>
         </>

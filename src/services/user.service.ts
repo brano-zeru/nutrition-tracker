@@ -27,6 +27,25 @@ export class UserService {
         };
     }
 
+    static async updateProfile(
+        userId: string,
+        profile: Partial<ProfileDTO>,
+    ): Promise<ProfileDTO> {
+        const profileResult = await prisma.profile.update({
+            where: { userId },
+            data: { ...profile },
+        });
+
+        return {
+            age: profileResult.age,
+            height: profileResult.height,
+            weight: profileResult.weight,
+            targetWeight: profileResult.targetWeight,
+            calorieGoal: profileResult.calorieGoal,
+            proteinGoal: profileResult.proteinGoal,
+        };
+    }
+
     static async isEmailUsed(email: string) {
         const emailResults = await prisma.user.findUnique({
             where: { email },
