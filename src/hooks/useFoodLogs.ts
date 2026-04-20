@@ -38,7 +38,9 @@ export const useFoodLogs = (): useFoodLogsValue => {
         mutationFn: async (entry: FoodEntryDTO): Promise<FoodEntry> =>
             await fetchApi('/api/food-logs', 'POST', entry),
         onSuccess: () =>
-            queryClient.invalidateQueries({ queryKey: ['foodLogSetter'] }),
+            queryClient.invalidateQueries({
+                queryKey: ['foodLog', getDateString(selectedDate)],
+            }),
     });
 
     const foodLogRemover = useMutation({
@@ -46,7 +48,9 @@ export const useFoodLogs = (): useFoodLogsValue => {
         mutationFn: async (id: string): Promise<void> =>
             await fetchApi(`/api/food-logs/${id}`, 'DELETE'),
         onSuccess: () =>
-            queryClient.invalidateQueries({ queryKey: ['foodLogRemover'] }),
+            queryClient.invalidateQueries({
+                queryKey: ['foodLog', getDateString(selectedDate)],
+            }),
     });
 
     return {

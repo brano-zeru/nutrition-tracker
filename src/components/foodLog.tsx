@@ -37,7 +37,6 @@ import { useFoodLogs } from '@/hooks/useFoodLogs';
 export function FoodLog() {
     const {
         currentDayFoodLogEntries,
-        refechFoodLogEntries,
         saveFoodLogEntry,
         isFetchingFoodLogs,
         deleteFoodLogEntry,
