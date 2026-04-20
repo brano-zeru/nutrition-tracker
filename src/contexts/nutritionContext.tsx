@@ -7,7 +7,8 @@ import React, {
     useCallback,
     useMemo,
 } from 'react';
-import { FoodEntry, SavedFood, DailyLog, NutritionGoals } from '../types/types';
+import { SavedFood, DailyLog, NutritionGoals } from '../types/types';
+import { FoodEntry, FoodEntryDTO } from '../types/dto';
 import { getDateString, defaultGoals } from './nutritionStore';
 
 interface NutritionContextType {
@@ -20,12 +21,9 @@ interface NutritionContextType {
     getCurrentDayLog: () => DailyLog;
 
     // Food entries
-    addFoodEntry: (entry: Omit<FoodEntry, 'id' | 'timestamp'>) => void;
+    addFoodEntry: (entry: FoodEntryDTO) => void;
     removeFoodEntry: (entryId: string) => void;
-    updateFoodEntry: (
-        entryId: string,
-        updates: Partial<Omit<FoodEntry, 'id' | 'timestamp'>>,
-    ) => void;
+    updateFoodEntry: (entryId: string, updates: Partial<FoodEntryDTO>) => void;
 
     // Saved foods
     savedFoods: SavedFood[];
@@ -65,7 +63,7 @@ export function NutritionProvider({ children }: { children: React.ReactNode }) {
     }, [selectedDate, dailyLogs, goals]);
 
     const addFoodEntry = useCallback(
-        (entry: Omit<FoodEntry, 'id' | 'timestamp'>) => {
+        (entry: FoodEntryDTO) => {
             const dateStr = getDateString(selectedDate);
             const newEntry: FoodEntry = {
                 ...entry,

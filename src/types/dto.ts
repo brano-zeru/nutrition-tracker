@@ -1,6 +1,22 @@
-import { User as PrismaUser, Profile as PrismaProfile } from '@prisma/client';
+import {
+    User as PrismaUser,
+    Profile as PrismaProfile,
+    FoodLog as PrismaFoodLog,
+} from '@prisma/client';
 
 export type UserDTO = Pick<PrismaUser, 'id' | 'email' | 'role' | 'fullName'>;
+
+export type FoodEntry = Omit<
+    Pick<
+        PrismaFoodLog,
+        'id' | 'foodName' | 'calories' | 'protein' | 'notes' | 'createdAt'
+    >,
+    'createdAt' | 'foodName'
+> & {
+    timestamp: PrismaFoodLog['createdAt'];
+    name: PrismaFoodLog['foodName'];
+};
+export type FoodEntryDTO = Omit<FoodEntry, 'id' | 'timestamp'>;
 
 export type ProfileDTO = Pick<
     PrismaProfile,

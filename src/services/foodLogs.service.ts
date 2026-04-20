@@ -1,11 +1,11 @@
 import { prisma } from '@/lib/prisma';
-import { FoodEntry, UserDTO } from '@/types';
+import { FoodEntry, FoodEntryDTO, UserDTO } from '@/types/dto';
 
 export class FoodLogsService {
     static async addFoodLogEntry(
-        entry: Omit<FoodEntry, 'id' | 'timestamp'>,
+        entry: FoodEntryDTO,
         userId: UserDTO['id'],
-    ): Promise<Omit<FoodEntry, 'id' | 'timestamp'>> {
+    ): Promise<FoodEntryDTO> {
         const newEntry = await prisma.foodLog.create({
             data: {
                 calories: entry.calories,

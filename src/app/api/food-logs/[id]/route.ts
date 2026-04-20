@@ -1,12 +1,10 @@
 import { FoodLogsService } from '@/services/foodLogs.service';
 import { NextRequest, NextResponse } from 'next/server';
 
-export const DELETE = async (
+export async function DELETE(
     request: NextRequest,
     { params }: { params: { id: string } },
-) => {
-    console.log(params);
-
+) {
     const { id } = await params;
 
     try {
@@ -26,8 +24,11 @@ export const DELETE = async (
     } catch (error) {
         console.error('Error deleting food log entry:', error);
         return NextResponse.json(
-            { error: 'Failed to delete food log entry' },
+            {
+                message: 'Failed to delete food log entry',
+                error: (error as Error).message,
+            },
             { status: 500 },
         );
     }
-};
+}

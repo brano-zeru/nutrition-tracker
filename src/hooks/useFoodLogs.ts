@@ -1,19 +1,18 @@
 import { useNutrition } from '@/contexts/nutritionContext';
 import { getDateString } from '@/contexts/nutritionStore';
 import { fetchApi } from '@/services/fetchApi';
-import { FoodEntry } from '@/types';
+import { FoodEntry, FoodEntryDTO } from '@/types/dto';
 import {
     QueryObserverResult,
     RefetchOptions,
     useMutation,
     useQuery,
+    useQueryClient,
 } from '@tanstack/react-query';
 
 interface useFoodLogsValue {
     currentDayFoodLogEntries: FoodEntry[] | undefined;
-    saveFoodLogEntry: (
-        entry: Omit<FoodEntry, 'id' | 'timestamp'>,
-    ) => Promise<FoodEntry>;
+    saveFoodLogEntry: (entry: FoodEntryDTO) => Promise<FoodEntry>;
     refechFoodLogEntries: (
         options?: RefetchOptions | undefined,
     ) => Promise<QueryObserverResult<FoodEntry[], Error>>;
@@ -23,29 +22,31 @@ interface useFoodLogsValue {
 
 export const useFoodLogs = (): useFoodLogsValue => {
     const { selectedDate } = useNutrition();
+    const queryClient = useQueryClient();
 
     const foodLogsGetter = useQuery({
         queryKey: ['foodLog', getDateString(selectedDate)],
         queryFn: async (): Promise<FoodEntry[]> => {
             return await fetchApi(
                 `/api/food-logs?date=${getDateString(selectedDate)}`,
-                'GET',
             );
         },
     });
 
     const foodLogsSetter = useMutation({
-        mutationKey: ['foodLog'],
-        mutationFn: async (
-            entry: Omit<FoodEntry, 'id' | 'timestamp'>,
-        ): Promise<FoodEntry> =>
+        mutationKey: ['foodLogSetter'],
+        mutationFn: async (entry: FoodEntryDTO): Promise<FoodEntry> =>
             await fetchApi('/api/food-logs', 'POST', entry),
+        onSuccess: () =>
+            queryClient.invalidateQueries({ queryKey: ['foodLogSetter'] }),
     });
 
     const foodLogRemover = useMutation({
-        mutationKey: ['foodLog'],
+        mutationKey: ['foodLogRemover'],
         mutationFn: async (id: string): Promise<void> =>
             await fetchApi(`/api/food-logs/${id}`, 'DELETE'),
+        onSuccess: () =>
+            queryClient.invalidateQueries({ queryKey: ['foodLogRemover'] }),
     });
 
     return {

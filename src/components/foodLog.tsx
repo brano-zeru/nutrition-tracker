@@ -31,7 +31,7 @@ import {
     BicepsFlexed,
 } from 'lucide-react';
 import { FieldGroup, Field, FieldLabel } from '@/components/ui/field';
-import { FoodEntry } from '@/types/types';
+import { FoodEntry } from '@/types/dto';
 import { useFoodLogs } from '@/hooks/useFoodLogs';
 
 export function FoodLog() {
@@ -64,7 +64,6 @@ export function FoodLog() {
             protein: parseFloat(newEntry.protein) || 0,
             notes: newEntry.notes,
         });
-        await refechFoodLogEntries();
 
         setIsAddOpen(false);
     };
@@ -88,7 +87,6 @@ export function FoodLog() {
                         ? `${multiplier}x portion`
                         : duplicateEntry.notes,
             });
-            await refechFoodLogEntries();
 
             setDuplicateEntry(null);
         }
@@ -272,7 +270,6 @@ export function FoodLog() {
                                                         await deleteFoodLogEntry(
                                                             entry.id,
                                                         );
-                                                        await refechFoodLogEntries();
                                                     }}
                                                     className="h-7 w-7 text-muted-foreground hover:text-destructive"
                                                 >
@@ -370,7 +367,6 @@ export function FoodLog() {
                                                                 await deleteFoodLogEntry(
                                                                     entry.id,
                                                                 );
-                                                                await refechFoodLogEntries();
                                                             }}
                                                             className="h-8 w-8 text-muted-foreground hover:text-destructive"
                                                         >
