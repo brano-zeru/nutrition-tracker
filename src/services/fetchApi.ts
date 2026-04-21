@@ -1,3 +1,5 @@
+import { TIME_ZONE_HEADER } from '@/consts';
+
 type METHOD = 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE';
 
 export async function fetchApi<T>(
@@ -7,6 +9,7 @@ export async function fetchApi<T>(
 ): Promise<T> {
     const defaultHeaders = {
         'Content-Type': 'application/json',
+        [TIME_ZONE_HEADER]: Intl.DateTimeFormat().resolvedOptions().timeZone,
     };
 
     const response = await fetch(url, {

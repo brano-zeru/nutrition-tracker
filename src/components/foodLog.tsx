@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -33,6 +33,8 @@ import {
 import { FieldGroup, Field, FieldLabel } from '@/components/ui/field';
 import { FoodEntry } from '@/types/dto';
 import { useFoodLogs } from '@/hooks/useFoodLogs';
+import { getDateString } from '@/contexts/nutritionStore';
+import { useNutrition } from '@/contexts/nutritionContext';
 
 export function FoodLog() {
     const {
@@ -52,6 +54,13 @@ export function FoodLog() {
         protein: '',
         notes: '',
     });
+
+    const { selectedDate } = useNutrition();
+    const isToday = getDateString(selectedDate) === getDateString(new Date());
+
+    useEffect(() => {
+        console.log('isToday ', isToday);
+    }, [isToday]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -108,6 +117,7 @@ export function FoodLog() {
                 <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
                     <DialogTrigger asChild>
                         <Button
+                            disabled={!isToday}
                             size="sm"
                             className="bg-primary text-primary-foreground hover:bg-primary/90 text-xs sm:text-sm h-8 sm:h-9"
                         >
@@ -255,6 +265,7 @@ export function FoodLog() {
                                                 <Button
                                                     variant="ghost"
                                                     size="icon"
+                                                    disabled={!isToday}
                                                     onClick={() =>
                                                         handleDuplicate(entry)
                                                     }
@@ -349,6 +360,7 @@ export function FoodLog() {
                                                         <Button
                                                             variant="ghost"
                                                             size="icon"
+                                                            disabled={!isToday}
                                                             onClick={() =>
                                                                 handleDuplicate(
                                                                     entry,

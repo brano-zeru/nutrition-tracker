@@ -1,4 +1,4 @@
-import { USER_ID_HEADER } from '@/consts';
+import { TIME_ZONE_HEADER, USER_ID_HEADER } from '@/consts';
 import { FoodLogsService } from '@/services/foodLogs.service';
 import { FoodEntryDTO } from '@/types/dto';
 import { NextRequest, NextResponse } from 'next/server';
@@ -7,7 +7,6 @@ export async function POST(request: NextRequest) {
     try {
         const userId = request.headers.get(USER_ID_HEADER);
         const data = (await request.json()) as FoodEntryDTO;
-
         if (!userId) {
             return NextResponse.json(
                 { error: 'Unauthorized' },
@@ -34,6 +33,7 @@ export async function GET(request: NextRequest) {
         const { searchParams } = new URL(request.url);
         const date = searchParams.get('date'); // Expecting YYYY-MM-DD format
         const userId = request.headers.get(USER_ID_HEADER);
+        const timeZone = request.headers.get(TIME_ZONE_HEADER);
 
         if (!userId) {
             return NextResponse.json(
@@ -42,7 +42,18 @@ export async function GET(request: NextRequest) {
             );
         }
 
-        const foodLogs = await FoodLogsService.getFoodLogsByDate(date!, userId);
+        if (!timeZone) {
+            return NextResponse.json(
+                { error: 'Time zone is required' },
+                { status: 400 },
+            );
+        }
+
+        const foodLogs = await FoodLogsService.getFoodLogsByDate(
+            date!,
+            userId,
+            timeZone,
+        );
 
         return NextResponse.json(foodLogs, { status: 200 });
     } catch (error) {

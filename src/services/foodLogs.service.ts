@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/prisma';
 import { FoodEntry, FoodEntryDTO, UserDTO } from '@/types/dto';
+import { fromZonedTime } from 'date-fns-tz';
 
 export class FoodLogsService {
     static async addFoodLogEntry(
@@ -28,13 +29,21 @@ export class FoodLogsService {
     static async getFoodLogsByDate(
         date: string,
         userId: UserDTO['id'],
+        timeZone: string,
     ): Promise<FoodEntry[]> {
+        const startUtc = fromZonedTime(`${date}T00:00:00.000`, timeZone);
+
+        const endUtc = new Date(startUtc);
+        endUtc.setUTCDate(endUtc.getUTCDate() + 1);
+
+        console.log(timeZone, startUtc, endUtc);
+
         const foodLogs = await prisma.foodLog.findMany({
             where: {
                 userId,
                 createdAt: {
-                    gte: new Date(`${date}T00:00:00.000Z`),
-                    lt: new Date(`${date}T23:59:59.999Z`),
+                    gte: startUtc,
+                    lt: endUtc,
                 },
             },
             orderBy: {

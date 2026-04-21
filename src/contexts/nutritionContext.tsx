@@ -114,10 +114,7 @@ export function NutritionProvider({ children }: { children: React.ReactNode }) {
     );
 
     const updateFoodEntry = useCallback(
-        (
-            entryId: string,
-            updates: Partial<Omit<FoodEntry, 'id' | 'timestamp'>>,
-        ) => {
+        (entryId: string, updates: Partial<FoodEntryDTO>) => {
             const dateStr = getDateString(selectedDate);
 
             setDailyLogs((prev) => {
