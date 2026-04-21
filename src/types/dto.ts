@@ -1,6 +1,14 @@
-import { User as PrismaUser, Profile as PrismaProfile } from '@prisma/client';
+import {
+    User as PrismaUser,
+    Profile as PrismaProfile,
+    FoodLog as PrismaFoodLog,
+} from '@prisma/client';
 
 export type UserDTO = Pick<PrismaUser, 'id' | 'email' | 'role' | 'fullName'>;
+export type FoodEntryDTO = Pick<
+    PrismaFoodLog,
+    'name' | 'calories' | 'protein' | 'notes'
+>;
 
 export type ProfileDTO = Pick<
     PrismaProfile,

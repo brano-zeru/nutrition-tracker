@@ -53,12 +53,12 @@ model Profile {
 }
 
 model FoodLog {
-  id       String @id @default(uuid())
-  foodName String @map("food_name")
-  calories Float
-  protein  Float
-
-  createdAt DateTime @default(now()) @map("created_at")
+  id        String @id @default(uuid())
+  name      String @map("food_name")
+  calories  Float
+  protein   Float
+  notes     String?
+  timestamp DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
   userId String @map("user_id")

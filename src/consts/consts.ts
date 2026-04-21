@@ -18,3 +18,4 @@ export const Routes: Route[] = [
 
 export const AUTH_COOKIE_NAME = 'auth-token';
 export const USER_ID_HEADER = 'user-id';
+export const TIME_ZONE_HEADER = 'time-zone';

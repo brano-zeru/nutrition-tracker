@@ -1,14 +1,5 @@
 import { ActivityLevel } from '@prisma/client';
 
-export interface FoodEntry {
-    id: string;
-    name: string;
-    calories: number;
-    protein: number;
-    notes: string;
-    timestamp: Date;
-}
-
 export interface SavedFood {
     id: string;
     name: string;
@@ -30,7 +21,7 @@ export interface NutritionGoals {
 }
 
 import { ReactNode } from 'react';
-import { UserDTO } from './dto';
+import { FoodEntry, UserDTO } from './dto';
 
 export const enum tabKeys {
     DASHBOARD = 'dashboard',

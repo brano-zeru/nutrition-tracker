@@ -7,7 +7,9 @@ import React, {
     useCallback,
     useMemo,
 } from 'react';
-import { FoodEntry, SavedFood, DailyLog, NutritionGoals } from '../types/types';
+import { SavedFood, DailyLog, NutritionGoals } from '../types';
+import { FoodEntryDTO } from '../types/dto';
+import { FoodLog as FoodEntry } from '@prisma/client';
 import { getDateString, defaultGoals } from './nutritionStore';
 
 interface NutritionContextType {
@@ -20,12 +22,9 @@ interface NutritionContextType {
     getCurrentDayLog: () => DailyLog;
 
     // Food entries
-    addFoodEntry: (entry: Omit<FoodEntry, 'id' | 'timestamp'>) => void;
+    addFoodEntry: (entry: FoodEntryDTO) => void;
     removeFoodEntry: (entryId: string) => void;
-    updateFoodEntry: (
-        entryId: string,
-        updates: Partial<Omit<FoodEntry, 'id' | 'timestamp'>>,
-    ) => void;
+    updateFoodEntry: (entryId: string, updates: Partial<FoodEntryDTO>) => void;
 
     // Saved foods
     savedFoods: SavedFood[];
@@ -65,12 +64,14 @@ export function NutritionProvider({ children }: { children: React.ReactNode }) {
     }, [selectedDate, dailyLogs, goals]);
 
     const addFoodEntry = useCallback(
-        (entry: Omit<FoodEntry, 'id' | 'timestamp'>) => {
+        (entry: FoodEntryDTO) => {
             const dateStr = getDateString(selectedDate);
             const newEntry: FoodEntry = {
                 ...entry,
                 id: `${dateStr}-${Date.now()}`,
                 timestamp: new Date(),
+                updatedAt: new Date(),
+                userId: '', // This will be set on the backend, so we can leave it empty here
             };
 
             setDailyLogs((prev) => {
@@ -116,10 +117,7 @@ export function NutritionProvider({ children }: { children: React.ReactNode }) {
     );
 
     const updateFoodEntry = useCallback(
-        (
-            entryId: string,
-            updates: Partial<Omit<FoodEntry, 'id' | 'timestamp'>>,
-        ) => {
+        (entryId: string, updates: Partial<FoodEntryDTO>) => {
             const dateStr = getDateString(selectedDate);
 
             setDailyLogs((prev) => {
