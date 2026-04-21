@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma';
-import { FoodEntry, FoodEntryDTO, UserDTO } from '@/types/dto';
+import { FoodEntryDTO, UserDTO } from '@/types/dto';
 import { fromZonedTime } from 'date-fns-tz';
+import { FoodLog as FoodEntry } from '@prisma/client';
 
 export class FoodLogsService {
     static async addFoodLogEntry(
@@ -12,18 +13,18 @@ export class FoodLogsService {
                 calories: entry.calories,
                 protein: entry.protein,
                 notes: entry.notes,
-                foodName: entry.name,
+                name: entry.name,
                 userId,
             },
             select: {
                 calories: true,
                 protein: true,
                 notes: true,
-                foodName: true,
+                name: true,
             },
         });
 
-        return { ...newEntry, name: newEntry.foodName };
+        return newEntry;
     }
 
     static async getFoodLogsByDate(
@@ -36,37 +37,30 @@ export class FoodLogsService {
         const endUtc = new Date(startUtc);
         endUtc.setUTCDate(endUtc.getUTCDate() + 1);
 
-        console.log(timeZone, startUtc, endUtc);
-
         const foodLogs = await prisma.foodLog.findMany({
             where: {
                 userId,
-                createdAt: {
+                timestamp: {
                     gte: startUtc,
                     lt: endUtc,
                 },
             },
             orderBy: {
-                createdAt: 'desc',
+                timestamp: 'desc',
             },
             select: {
                 id: true,
-                foodName: true,
+                name: true,
                 calories: true,
                 protein: true,
                 notes: true,
-                createdAt: true,
+                timestamp: true,
+                updatedAt: true,
+                userId: true,
             },
         });
 
-        return foodLogs.map((log) => ({
-            id: log.id,
-            name: log.foodName,
-            calories: log.calories,
-            protein: log.protein,
-            notes: log.notes,
-            timestamp: log.createdAt,
-        }));
+        return foodLogs;
     }
 
     static async deleteFoodLogEntry(id: string): Promise<void> {

@@ -7,8 +7,9 @@ import React, {
     useCallback,
     useMemo,
 } from 'react';
-import { SavedFood, DailyLog, NutritionGoals } from '../types/types';
-import { FoodEntry, FoodEntryDTO } from '../types/dto';
+import { SavedFood, DailyLog, NutritionGoals } from '../types';
+import { FoodEntryDTO } from '../types/dto';
+import { FoodLog as FoodEntry } from '@prisma/client';
 import { getDateString, defaultGoals } from './nutritionStore';
 
 interface NutritionContextType {
@@ -69,6 +70,8 @@ export function NutritionProvider({ children }: { children: React.ReactNode }) {
                 ...entry,
                 id: `${dateStr}-${Date.now()}`,
                 timestamp: new Date(),
+                updatedAt: new Date(),
+                userId: '', // This will be set on the backend, so we can leave it empty here
             };
 
             setDailyLogs((prev) => {

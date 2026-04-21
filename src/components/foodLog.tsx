@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -31,18 +31,14 @@ import {
     BicepsFlexed,
 } from 'lucide-react';
 import { FieldGroup, Field, FieldLabel } from '@/components/ui/field';
-import { FoodEntry } from '@/types/dto';
+import { FoodLog as FoodEntry } from '@prisma/client';
 import { useFoodLogs } from '@/hooks/useFoodLogs';
 import { getDateString } from '@/contexts/nutritionStore';
 import { useNutrition } from '@/contexts/nutritionContext';
 
 export function FoodLog() {
-    const {
-        currentDayFoodLogEntries,
-        saveFoodLogEntry,
-        isFetchingFoodLogs,
-        deleteFoodLogEntry,
-    } = useFoodLogs();
+    const { currentDayFoodLogEntries, saveFoodLogEntry, deleteFoodLogEntry } =
+        useFoodLogs();
     const [isAddOpen, setIsAddOpen] = useState(false);
     const [duplicateEntry, setDuplicateEntry] = useState<FoodEntry | null>(
         null,
@@ -57,10 +53,6 @@ export function FoodLog() {
 
     const { selectedDate } = useNutrition();
     const isToday = getDateString(selectedDate) === getDateString(new Date());
-
-    useEffect(() => {
-        console.log('isToday ', isToday);
-    }, [isToday]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -218,7 +210,7 @@ export function FoodLog() {
                 </Dialog>
             </CardHeader>
             <CardContent className="px-3 sm:px-6">
-                {isFetchingFoodLogs ? (
+                {!currentDayFoodLogEntries ? (
                     <div className="flex flex-col items-center justify-center py-8 sm:py-12 text-center">
                         <div className="rounded-full bg-secondary p-3 sm:p-4 mb-3 sm:mb-4">
                             <Loader2 className="h-4 w-4 animate-spin" />

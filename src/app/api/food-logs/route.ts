@@ -44,13 +44,20 @@ export async function GET(request: NextRequest) {
 
         if (!timeZone) {
             return NextResponse.json(
-                { error: 'Time zone is required' },
+                { error: 'Time zone is required! timezone = ' + timeZone },
+                { status: 400 },
+            );
+        }
+
+        if (!date) {
+            return NextResponse.json(
+                { error: 'Date is required! date = ' + date },
                 { status: 400 },
             );
         }
 
         const foodLogs = await FoodLogsService.getFoodLogsByDate(
-            date!,
+            date,
             userId,
             timeZone,
         );

@@ -5,18 +5,10 @@ import {
 } from '@prisma/client';
 
 export type UserDTO = Pick<PrismaUser, 'id' | 'email' | 'role' | 'fullName'>;
-
-export type FoodEntry = Omit<
-    Pick<
-        PrismaFoodLog,
-        'id' | 'foodName' | 'calories' | 'protein' | 'notes' | 'createdAt'
-    >,
-    'createdAt' | 'foodName'
-> & {
-    timestamp: PrismaFoodLog['createdAt'];
-    name: PrismaFoodLog['foodName'];
-};
-export type FoodEntryDTO = Omit<FoodEntry, 'id' | 'timestamp'>;
+export type FoodEntryDTO = Omit<
+    PrismaFoodLog,
+    'id' | 'timestamp' | 'userId' | 'updatedAt'
+>;
 
 export type ProfileDTO = Pick<
     PrismaProfile,

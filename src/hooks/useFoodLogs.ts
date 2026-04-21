@@ -1,13 +1,13 @@
 import { useNutrition } from '@/contexts/nutritionContext';
 import { getDateString } from '@/contexts/nutritionStore';
 import { fetchApi } from '@/services/fetchApi';
-import { FoodEntry, FoodEntryDTO } from '@/types/dto';
+import { FoodEntryDTO } from '@/types/dto';
+import { FoodLog as FoodEntry } from '@prisma/client';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 interface useFoodLogsValue {
     currentDayFoodLogEntries: FoodEntry[] | undefined;
     saveFoodLogEntry: (entry: FoodEntryDTO) => Promise<FoodEntry>;
-    isFetchingFoodLogs: boolean;
     deleteFoodLogEntry: (id: string) => Promise<void>;
 }
 
@@ -47,7 +47,6 @@ export const useFoodLogs = (): useFoodLogsValue => {
     return {
         currentDayFoodLogEntries: foodLogsGetter.data,
         saveFoodLogEntry: foodLogsSetter.mutateAsync,
-        isFetchingFoodLogs: foodLogsGetter.isFetching,
         deleteFoodLogEntry: foodLogRemover.mutateAsync,
     };
 };
