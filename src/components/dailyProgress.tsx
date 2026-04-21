@@ -1,17 +1,14 @@
 'use client';
 
-import { useNutrition } from '@/contexts/nutritionContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Flame, Dumbbell } from 'lucide-react';
 import { ProgressStat } from './ProgressStat';
 import { useProfile } from '@/hooks/useProfile';
+import { useDailyProgress } from '@/hooks/useDailyProgress';
 
 export function DailyProgress() {
-    const { getTotalCalories, getTotalProtein } = useNutrition();
+    const { currentDailyCalories, currentDailyProtein } = useDailyProgress();
     const { goals, isLoading } = useProfile();
-
-    const calories = getTotalCalories();
-    const protein = getTotalProtein();
 
     //should be replaced with a skeleton loader
     if (isLoading || !goals) return <></>;
@@ -27,7 +24,7 @@ export function DailyProgress() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10 px-2 sm:px-0">
                     <ProgressStat
                         label="Calories"
-                        value={calories}
+                        value={currentDailyCalories}
                         goal={goals.calorieGoal}
                         icon={Flame}
                         colorVar="var(--calories)"
@@ -36,7 +33,7 @@ export function DailyProgress() {
                     />
                     <ProgressStat
                         label="Protein"
-                        value={protein}
+                        value={currentDailyProtein}
                         goal={goals.proteinGoal}
                         unit="g"
                         icon={Dumbbell}
@@ -52,7 +49,11 @@ export function DailyProgress() {
                             Remaining
                         </p>
                         <p className="text-lg sm:text-xl font-bold text-calories mt-0.5 sm:mt-1">
-                            {Math.max(0, goals.calorieGoal - calories)} cal
+                            {Math.max(
+                                0,
+                                goals.calorieGoal - currentDailyCalories,
+                            )}{' '}
+                            cal
                         </p>
                     </div>
                     <div className="bg-secondary/50 rounded-lg p-3 sm:p-4">
@@ -60,7 +61,11 @@ export function DailyProgress() {
                             Remaining
                         </p>
                         <p className="text-lg sm:text-xl font-bold text-protein mt-0.5 sm:mt-1">
-                            {Math.max(0, goals.proteinGoal - protein)}g protein
+                            {Math.max(
+                                0,
+                                goals.proteinGoal - currentDailyProtein,
+                            )}
+                            g protein
                         </p>
                     </div>
                 </div>

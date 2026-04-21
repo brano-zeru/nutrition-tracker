@@ -5,9 +5,9 @@ import {
 } from '@prisma/client';
 
 export type UserDTO = Pick<PrismaUser, 'id' | 'email' | 'role' | 'fullName'>;
-export type FoodEntryDTO = Omit<
+export type FoodEntryDTO = Pick<
     PrismaFoodLog,
-    'id' | 'timestamp' | 'userId' | 'updatedAt'
+    'name' | 'calories' | 'protein' | 'notes'
 >;
 
 export type ProfileDTO = Pick<
