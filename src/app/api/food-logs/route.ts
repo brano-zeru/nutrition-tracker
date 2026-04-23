@@ -1,57 +1,36 @@
-import { TIME_ZONE_HEADER, USER_ID_HEADER } from '@/consts';
+import { TIME_ZONE_HEADER } from '@/consts';
+import { validatedRoute } from '@/lib/validations';
+import {
+    foodLogsPostRequest,
+    getFoodLogByDateSchema,
+} from '@/lib/validations/schemas';
 import { FoodLogsService } from '@/services/foodLogs.service';
 import { FoodEntryDTO } from '@/types/dto';
 import { NextRequest, NextResponse } from 'next/server';
 
-export async function POST(request: NextRequest) {
-    try {
-        const userId = request.headers.get(USER_ID_HEADER);
-        const data = (await request.json()) as FoodEntryDTO;
-        if (!userId) {
-            return NextResponse.json(
-                { error: 'Unauthorized' },
-                { status: 401 },
-            );
-        }
-
-        const addedEntry = await FoodLogsService.addFoodLogEntry(data, userId);
-
-        return NextResponse.json(addedEntry, { status: 201 });
-    } catch (error) {
-        return NextResponse.json(
-            {
-                message: 'Failed to add food log entry',
-                error: (error as Error).message,
-            },
-            { status: 500 },
+export const POST = validatedRoute(
+    { schemas: foodLogsPostRequest },
+    async (_request: NextRequest, { body, userId }) => {
+        const addedEntry = await FoodLogsService.addFoodLogEntry(
+            body as FoodEntryDTO,
+            userId,
         );
-    }
-}
+        return NextResponse.json(addedEntry, { status: 201 });
+    },
+);
 
-export async function GET(request: NextRequest) {
-    try {
-        const { searchParams } = new URL(request.url);
-        const date = searchParams.get('date'); // Expecting YYYY-MM-DD format
-        const userId = request.headers.get(USER_ID_HEADER);
+export const GET = validatedRoute(
+    {
+        schemas: getFoodLogByDateSchema,
+        authRequired: true,
+    },
+    async (request: NextRequest, { query, userId }) => {
+        const { date } = query; // Expecting YYYY-MM-DD format
         const timeZone = request.headers.get(TIME_ZONE_HEADER);
-
-        if (!userId) {
-            return NextResponse.json(
-                { error: 'Unauthorized' },
-                { status: 401 },
-            );
-        }
 
         if (!timeZone) {
             return NextResponse.json(
                 { error: 'Time zone is required! timezone = ' + timeZone },
-                { status: 400 },
-            );
-        }
-
-        if (!date) {
-            return NextResponse.json(
-                { error: 'Date is required! date = ' + date },
                 { status: 400 },
             );
         }
@@ -63,13 +42,5 @@ export async function GET(request: NextRequest) {
         );
 
         return NextResponse.json(foodLogs, { status: 200 });
-    } catch (error) {
-        return NextResponse.json(
-            {
-                message: 'Failed to fetch food logs',
-                error: (error as Error).message,
-            },
-            { status: 500 },
-        );
-    }
-}
+    },
+);

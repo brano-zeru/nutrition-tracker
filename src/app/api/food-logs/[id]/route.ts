@@ -1,34 +1,18 @@
+import { validatedRoute } from '@/lib/validations';
+import { foodLogsDeleteRequestSchema } from '@/lib/validations/schemas';
 import { FoodLogsService } from '@/services/foodLogs.service';
 import { NextRequest, NextResponse } from 'next/server';
 
-export async function DELETE(
-    request: NextRequest,
-    { params }: { params: { id: string } },
-) {
-    const { id } = await params;
+export const DELETE = validatedRoute(
+    { schemas: foodLogsDeleteRequestSchema },
+    async (_request: NextRequest, { params }) => {
+        const { foodLogID } = params;
 
-    try {
-        if (!id) {
-            return NextResponse.json(
-                { error: 'Food log entry ID is required' },
-                { status: 400 },
-            );
-        }
-
-        await FoodLogsService.deleteFoodLogEntry(id);
+        await FoodLogsService.deleteFoodLogEntry(foodLogID);
 
         return NextResponse.json(
             { message: 'Food log entry deleted successfully' },
             { status: 200 },
         );
-    } catch (error) {
-        console.error('Error deleting food log entry:', error);
-        return NextResponse.json(
-            {
-                message: 'Failed to delete food log entry',
-                error: (error as Error).message,
-            },
-            { status: 500 },
-        );
-    }
-}
+    },
+);
