@@ -15,6 +15,7 @@
         "db:stop": "docker compose stop",
         "format": "prettier --write .",
         "prepare": "husky",
+        "types-check": "tsc --noEmit",
         "postinstall": "prisma generate"
     },
     "dependencies": {
@@ -102,7 +103,15 @@
         "typescript": "5.7.3"
     },
     "lint-staged": {
-        "*.{js,jsx,ts,tsx,css,json}": "prettier --write",
-        "*.{js,jsx,ts,tsx}": "eslint"
+        "*.{js,jsx,ts,tsx}": [
+            "eslint",
+            "prettier --write"
+        ],
+        "*.{css,json}": [
+            "prettier --write"
+        ],
+        "*.{ts,tsx}": [
+            "bash -c 'pnpm types-check'"
+        ]
     }
 }
