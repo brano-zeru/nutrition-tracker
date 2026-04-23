@@ -1,12 +1,19 @@
 import bcrypt from 'bcrypt';
 import { prisma } from '../lib/prisma';
-import { RegisterUserDTO, UserDTO } from '@/types';
+import { RegisterUserDTO, UserDTO } from '@/types/dto';
 
 export class AuthService {
     static async register(data: RegisterUserDTO): Promise<UserDTO | null> {
         const {
             user: { email, password, fullName },
-            profile: { age, height, weight, targetWeight },
+            profile: {
+                age,
+                height,
+                weight,
+                targetWeight,
+                calorieGoal,
+                proteinGoal,
+            },
         } = data;
 
         const saltRounds = 10;
@@ -22,7 +29,9 @@ export class AuthService {
                         age,
                         height,
                         weight,
-                        targetWeight: targetWeight || null,
+                        targetWeight,
+                        calorieGoal,
+                        proteinGoal,
                     },
                 },
             },

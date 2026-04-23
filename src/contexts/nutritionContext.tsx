@@ -23,8 +23,6 @@ interface NutritionContextType {
 
     // Food entries
     addFoodEntry: (entry: FoodEntryDTO) => void;
-    removeFoodEntry: (entryId: string) => void;
-    updateFoodEntry: (entryId: string, updates: Partial<FoodEntryDTO>) => void;
 
     // Saved foods
     savedFoods: SavedFood[];
@@ -92,50 +90,6 @@ export function NutritionProvider({ children }: { children: React.ReactNode }) {
             });
         },
         [selectedDate, goals],
-    );
-
-    const removeFoodEntry = useCallback(
-        (entryId: string) => {
-            const dateStr = getDateString(selectedDate);
-
-            setDailyLogs((prev) => {
-                const currentLog = prev[dateStr];
-                if (!currentLog) return prev;
-
-                return {
-                    ...prev,
-                    [dateStr]: {
-                        ...currentLog,
-                        entries: currentLog.entries.filter(
-                            (e) => e.id !== entryId,
-                        ),
-                    },
-                };
-            });
-        },
-        [selectedDate],
-    );
-
-    const updateFoodEntry = useCallback(
-        (entryId: string, updates: Partial<FoodEntryDTO>) => {
-            const dateStr = getDateString(selectedDate);
-
-            setDailyLogs((prev) => {
-                const currentLog = prev[dateStr];
-                if (!currentLog) return prev;
-
-                return {
-                    ...prev,
-                    [dateStr]: {
-                        ...currentLog,
-                        entries: currentLog.entries.map((e) =>
-                            e.id === entryId ? { ...e, ...updates } : e,
-                        ),
-                    },
-                };
-            });
-        },
-        [selectedDate],
     );
 
     const addSavedFood = useCallback((food: Omit<SavedFood, 'id'>) => {
@@ -258,8 +212,6 @@ export function NutritionProvider({ children }: { children: React.ReactNode }) {
             dailyLogs,
             getCurrentDayLog,
             addFoodEntry,
-            removeFoodEntry,
-            updateFoodEntry,
             savedFoods,
             addSavedFood,
             removeSavedFood,
@@ -276,8 +228,6 @@ export function NutritionProvider({ children }: { children: React.ReactNode }) {
             dailyLogs,
             getCurrentDayLog,
             addFoodEntry,
-            removeFoodEntry,
-            updateFoodEntry,
             savedFoods,
             addSavedFood,
             removeSavedFood,

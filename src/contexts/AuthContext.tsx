@@ -7,8 +7,8 @@ import {
     ReactNode,
     useEffect,
 } from 'react';
-import { UserDTO } from '@/types';
 import { fetchApi } from '@/services/fetchApi';
+import { UserDTO } from '@/types/dto';
 
 interface AuthContextType {
     user: UserDTO | null;

@@ -1,5 +1,5 @@
 import { prisma } from '@/lib/prisma';
-import { ProfileDTO } from '@/types';
+import { ProfileDTO } from '@/types/dto';
 
 export class UserService {
     static async getUser(userId: string) {
@@ -24,6 +24,7 @@ export class UserService {
             targetWeight: profile.targetWeight,
             calorieGoal: profile.calorieGoal,
             proteinGoal: profile.proteinGoal,
+            activityLevel: profile.activityLevel,
         };
     }
 
@@ -43,6 +44,7 @@ export class UserService {
             targetWeight: profileResult.targetWeight,
             calorieGoal: profileResult.calorieGoal,
             proteinGoal: profileResult.proteinGoal,
+            activityLevel: profileResult.activityLevel,
         };
     }
 
