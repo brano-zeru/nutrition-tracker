@@ -138,14 +138,14 @@ export const STEPS: FormStep[] = [
                     `${weight} (recommended for you)`,
             },
             {
-                name: 'targetCalories',
+                name: 'calorieGoal',
                 label: 'Target Calories (per day)',
                 type: 'number',
                 dynamicPlaceholder: (calories: string) =>
                     `${calories} (recommended for you)`,
             },
             {
-                name: 'targetProteins',
+                name: 'proteinGoal',
                 label: 'Target Proteins (per day)',
                 type: 'number',
                 dynamicPlaceholder: (proteins: string) =>

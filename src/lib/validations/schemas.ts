@@ -8,13 +8,16 @@ export const userBaseSchema = z.object({
     fullName: z.string(),
 });
 
-export const profileActivityLevel = z.enum([
-    'SEDENTARY',
-    'LIGHTLY_ACTIVE',
-    'MODERATELY_ACTIVE',
-    'VERY_ACTIVE',
-    'EXTRA_ACTIVE',
-]);
+export const profileActivityLevel = z.enum(
+    [
+        'SEDENTARY',
+        'LIGHTLY_ACTIVE',
+        'MODERATELY_ACTIVE',
+        'VERY_ACTIVE',
+        'EXTRA_ACTIVE',
+    ],
+    { message: 'please select a valid activity level' },
+);
 
 export const goalsSchema = z.object({
     targetWeight: z.coerce.number().min(30, 'Invalid weight'),
@@ -22,12 +25,14 @@ export const goalsSchema = z.object({
     proteinGoal: z.coerce.number().min(100, 'Invalid protein amount'),
 });
 
-export const profileBaseSchema = goalsSchema.extend({
+export const profileBaseSchema = z.object({
     age: z.coerce.number().min(13, 'user should be atleast 13'),
     height: z.coerce.number().min(100, 'invalid height'),
     weight: z.coerce.number().min(30, 'invalid weight'),
     activityLevel: profileActivityLevel,
 });
+
+export const userProfileSchema = profileBaseSchema.merge(goalsSchema);
 
 export const foodLogBaseSchema = z.object({
     name: z.string(),
@@ -40,13 +45,13 @@ export const registerAccountSchema = userBaseSchema.extend({
     password: z.string(),
 });
 
-export const registerProfileSchema = profileBaseSchema;
-
 export const registerGoalsSchema = goalsSchema;
+
+export const registerProfileSchema = profileBaseSchema;
 
 export const registerSchema = z.object({
     user: registerAccountSchema,
-    profile: registerProfileSchema,
+    profile: userProfileSchema,
 });
 
 export const checkEmailRequestSchema = {
