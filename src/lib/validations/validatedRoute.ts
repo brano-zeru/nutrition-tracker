@@ -43,7 +43,7 @@ export function validatedRoute<
                 : ({} as TQuery);
 
             const validatedParams = schemas.params
-                ? schemas.params.parse(params)
+                ? schemas.params.parse(await params)
                 : (params as TParams);
 
             return await handler(request, {

@@ -6,7 +6,7 @@ import { NextRequest, NextResponse } from 'next/server';
 export const DELETE = validatedRoute(
     { schemas: foodLogsDeleteRequestSchema },
     async (_request: NextRequest, { params }) => {
-        const { foodLogID } = params;
+        const { id: foodLogID } = params;
 
         await FoodLogsService.deleteFoodLogEntry(foodLogID);
 

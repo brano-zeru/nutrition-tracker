@@ -3,7 +3,6 @@ import { setCookies, signToken } from '@/lib/auth';
 import { validatedRoute } from '@/lib/validations';
 import { registerRequestSchema } from '@/lib/validations/schemas';
 import { AuthService } from '@/services/auth.service';
-import { RegisterUserDTO } from '@/types/dto';
 import { NextResponse } from 'next/server';
 
 export const POST = validatedRoute(
@@ -14,7 +13,7 @@ export const POST = validatedRoute(
         const userResults = await AuthService.register({
             user,
             profile,
-        } as RegisterUserDTO);
+        });
 
         if (!userResults) {
             return NextResponse.json(

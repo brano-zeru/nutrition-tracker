@@ -1,30 +1,9 @@
+import {
+    registerAccountSchema,
+    registerGoalsSchema,
+    registerProfileSchema,
+} from '@/lib/validations/schemas';
 import z from 'zod';
-
-export const accountSchema = z.object({
-    fullName: z.string().min(2, 'Full name is required'),
-    email: z.string().email('Invalid email address'),
-    password: z.string().min(6, 'Password must be at least 6 characters'),
-});
-
-export const profileSchema = z.object({
-    age: z.coerce.number().min(13, 'Must be at least 13'),
-    height: z.coerce.number().min(100, 'Invalid height'),
-    weight: z.coerce.number().min(30, 'Invalid weight'),
-});
-
-export const goalsSchema = z.object({
-    targetWeight: z.coerce
-        .number()
-        .min(
-            30,
-            'What are you a bitch ass holocaust surviour? please enter a real value',
-        )
-        .max(
-            100,
-            "Wow come down buddy you're gonna break the floor with your fat ass",
-        ),
-    targetCalories: z.coerce.number().min(40),
-});
 
 export type StepScope = 'user' | 'profile';
 
@@ -66,7 +45,7 @@ export const STEPS: FormStep[] = [
         description: 'Step 1: Create your account',
         submitLabel: 'Next: Personal Details',
         isSubmittingLabel: 'Saving...',
-        schema: accountSchema,
+        schema: registerAccountSchema,
         fields: [
             {
                 name: 'fullName',
@@ -95,7 +74,7 @@ export const STEPS: FormStep[] = [
         description: 'Step 2: Nutrition Profile',
         submitLabel: 'Next: Your Goals',
         isSubmittingLabel: 'Saving...',
-        schema: profileSchema,
+        schema: registerProfileSchema,
         fields: [
             {
                 name: 'age',
@@ -149,7 +128,7 @@ export const STEPS: FormStep[] = [
         description: 'Last step: goals',
         submitLabel: 'Finish & Start',
         isSubmittingLabel: 'Creating account...',
-        schema: goalsSchema,
+        schema: registerGoalsSchema,
         fields: [
             {
                 name: 'targetWeight',

@@ -1,10 +1,10 @@
 import { validatedRoute } from '@/lib/validations';
-import { checkEmailSchema } from '@/lib/validations/schemas';
+import { checkEmailRequestSchema } from '@/lib/validations/schemas';
 import { UserService } from '@/services/user.service';
 import { NextResponse } from 'next/server';
 
 export const GET = validatedRoute(
-    { schemas: checkEmailSchema },
+    { schemas: checkEmailRequestSchema },
     async (_request, { query }) => {
         const { email } = query;
 

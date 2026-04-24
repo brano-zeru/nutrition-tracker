@@ -29,8 +29,7 @@ import { FieldGroup, Field, FieldLabel } from '@/components/ui/field';
 import { SavedFood } from '@/types/types';
 
 export function SavedFoodsLibrary() {
-    const { savedFoods, addSavedFood, removeSavedFood, addSavedFoodToDay } =
-        useNutrition();
+    const { savedFoods, removeSavedFood } = useNutrition();
     const [searchQuery, setSearchQuery] = useState('');
     const [isAddOpen, setIsAddOpen] = useState(false);
     const [selectedFood, setSelectedFood] = useState<SavedFood | null>(null);
@@ -49,11 +48,7 @@ export function SavedFoodsLibrary() {
         e.preventDefault();
         if (!newFood.name || !newFood.caloriesPer100g) return;
 
-        addSavedFood({
-            name: newFood.name,
-            caloriesPer100g: parseInt(newFood.caloriesPer100g) || 0,
-            proteinPer100g: parseFloat(newFood.proteinPer100g) || 0,
-        });
+        // logic here should be completed to add saved food to library
 
         setNewFood({ name: '', caloriesPer100g: '', proteinPer100g: '' });
         setIsAddOpen(false);
@@ -66,7 +61,6 @@ export function SavedFoodsLibrary() {
 
     const confirmQuickAdd = () => {
         if (selectedFood && grams) {
-            addSavedFoodToDay(selectedFood, parseInt(grams));
             setSelectedFood(null);
         }
     };

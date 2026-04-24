@@ -2,7 +2,7 @@ import { TIME_ZONE_HEADER } from '@/consts';
 import { validatedRoute } from '@/lib/validations';
 import {
     foodLogsPostRequest,
-    getFoodLogByDateSchema,
+    getFoodLogByDateRequestSchema,
 } from '@/lib/validations/schemas';
 import { FoodLogsService } from '@/services/foodLogs.service';
 import { FoodEntryDTO } from '@/types/dto';
@@ -21,7 +21,7 @@ export const POST = validatedRoute(
 
 export const GET = validatedRoute(
     {
-        schemas: getFoodLogByDateSchema,
+        schemas: getFoodLogByDateRequestSchema,
         authRequired: true,
     },
     async (request: NextRequest, { query, userId }) => {
