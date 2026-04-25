@@ -1,38 +1,21 @@
 import {
-    User as PrismaUser,
-    Profile as PrismaProfile,
-    FoodLog as PrismaFoodLog,
-} from '@prisma/client';
+    foodLogBaseSchema,
+    goalsSchema,
+    registerSchema,
+    persistedUserSchema,
+    userProfileSchema,
+} from '@/lib/validations/schemas';
+import { z } from 'zod';
 
-export type UserDTO = Pick<PrismaUser, 'id' | 'email' | 'role' | 'fullName'>;
-export type FoodEntryDTO = Pick<
-    PrismaFoodLog,
-    'name' | 'calories' | 'protein' | 'notes'
->;
-
-export type ProfileDTO = Pick<
-    PrismaProfile,
-    | 'age'
-    | 'height'
-    | 'weight'
-    | 'targetWeight'
-    | 'calorieGoal'
-    | 'proteinGoal'
-    | 'activityLevel'
->;
+export type UserDTO = z.infer<typeof persistedUserSchema>;
+export type FoodEntryDTO = z.infer<typeof foodLogBaseSchema>;
+export type ProfileDTO = z.infer<typeof userProfileSchema>;
 
 export interface UserDetails {
     user: UserDTO;
     profile: ProfileDTO;
 }
 
-export interface RegisterUserDTO extends Omit<UserDetails, 'user'> {
-    user: Omit<UserDTO, 'id'> & {
-        password: string;
-    };
-}
+export type RegisterUserDTO = z.infer<typeof registerSchema>;
 
-export type UserGoals = Pick<
-    ProfileDTO,
-    'targetWeight' | 'calorieGoal' | 'proteinGoal'
->;
+export type UserGoals = z.infer<typeof goalsSchema>;

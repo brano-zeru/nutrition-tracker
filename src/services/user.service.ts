@@ -1,13 +1,19 @@
 import { prisma } from '@/lib/prisma';
-import { ProfileDTO } from '@/types';
+import {
+    persistedUserSchema,
+    userProfileSchema,
+} from '@/lib/validations/schemas';
+import { ProfileDTO, UserDTO } from '@/types/dto';
 
 export class UserService {
-    static async getUser(userId: string) {
-        const user = await prisma.user.findUnique({
+    static async getUser(userId: string): Promise<UserDTO | null> {
+        const userResult = await prisma.user.findUnique({
             where: { id: userId },
         });
 
-        return user;
+        if (!userResult) return null;
+
+        return persistedUserSchema.parse(userResult);
     }
 
     static async getProfile(userId: string): Promise<ProfileDTO | null> {
@@ -17,33 +23,21 @@ export class UserService {
 
         if (!profile) return null;
 
-        return {
-            age: profile.age,
-            height: profile.height,
-            weight: profile.weight,
-            targetWeight: profile.targetWeight,
-            calorieGoal: profile.calorieGoal,
-            proteinGoal: profile.proteinGoal,
-        };
+        return userProfileSchema.parse(profile) as ProfileDTO;
     }
 
     static async updateProfile(
         userId: string,
         profile: Partial<ProfileDTO>,
-    ): Promise<ProfileDTO> {
+    ): Promise<ProfileDTO | null> {
         const profileResult = await prisma.profile.update({
             where: { userId },
             data: { ...profile },
         });
 
-        return {
-            age: profileResult.age,
-            height: profileResult.height,
-            weight: profileResult.weight,
-            targetWeight: profileResult.targetWeight,
-            calorieGoal: profileResult.calorieGoal,
-            proteinGoal: profileResult.proteinGoal,
-        };
+        if (!profileResult) return null;
+
+        return userProfileSchema.parse(profileResult);
     }
 
     static async isEmailUsed(email: string) {

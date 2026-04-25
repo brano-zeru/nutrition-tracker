@@ -1,14 +1,14 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
-import { jwtVerify } from 'jose';
-import { config } from 'dotenv';
 import { AUTH_COOKIE_NAME } from '@/consts';
-import { UserDTO } from '@/types';
+import { UserDTO } from '@/types/dto';
+import { validatedRoute } from '@/lib/validations';
+import { meRequestSchema } from '@/lib/validations/schemas';
+import { verifyToken } from '@/lib/auth';
 
-config();
-
-export async function GET() {
-    try {
+export const GET = validatedRoute(
+    { schemas: meRequestSchema },
+    async (_request) => {
         const cookieStore = await cookies();
         const token = cookieStore.get(AUTH_COOKIE_NAME)?.value;
 
@@ -16,9 +16,11 @@ export async function GET() {
             return NextResponse.json({ user: null }, { status: 401 });
         }
 
-        const secret = new TextEncoder().encode(process.env.JWT_SECRET!);
+        const payload = await verifyToken(token);
 
-        const { payload } = await jwtVerify(token, secret);
+        if (!payload) {
+            return NextResponse.json({ user: null }, { status: 404 });
+        }
 
         const { user } = payload as unknown as {
             user: UserDTO;
@@ -28,8 +30,5 @@ export async function GET() {
             user,
             message: 'cookies returned!',
         });
-    } catch (error) {
-        console.error('JWT Verification failed:', error);
-        return NextResponse.json({ user: null }, { status: 401 });
-    }
-}
+    },
+);

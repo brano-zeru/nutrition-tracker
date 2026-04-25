@@ -65,10 +65,9 @@ export const RegisterForm = () => {
 
                 let val = '';
                 if (field.name === 'targetWeight') val = recs.weight.toString();
-                if (field.name === 'targetCalories')
+                if (field.name === 'calorieGoal')
                     val = recs.calories.toString();
-                if (field.name === 'targetProteins')
-                    val = recs.protein.toString();
+                if (field.name === 'proteinGoal') val = recs.protein.toString();
 
                 return {
                     ...field,

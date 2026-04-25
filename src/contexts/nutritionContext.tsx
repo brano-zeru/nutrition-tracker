@@ -8,8 +8,7 @@ import React, {
     useMemo,
 } from 'react';
 import { SavedFood, DailyLog, NutritionGoals } from '../types';
-import { FoodEntryDTO } from '../types/dto';
-import { FoodLog as FoodEntry } from '@prisma/client';
+
 import { getDateString, defaultGoals } from './nutritionStore';
 
 interface NutritionContextType {
@@ -21,16 +20,9 @@ interface NutritionContextType {
     dailyLogs: Record<string, DailyLog>;
     getCurrentDayLog: () => DailyLog;
 
-    // Food entries
-    addFoodEntry: (entry: FoodEntryDTO) => void;
-    removeFoodEntry: (entryId: string) => void;
-    updateFoodEntry: (entryId: string, updates: Partial<FoodEntryDTO>) => void;
-
     // Saved foods
     savedFoods: SavedFood[];
-    addSavedFood: (food: Omit<SavedFood, 'id'>) => void;
     removeSavedFood: (foodId: string) => void;
-    addSavedFoodToDay: (food: SavedFood, grams: number) => void;
 
     // Goals
     goals: NutritionGoals;
@@ -47,7 +39,7 @@ const NutritionContext = createContext<NutritionContextType | null>(null);
 
 export function NutritionProvider({ children }: { children: React.ReactNode }) {
     const [selectedDate, setSelectedDate] = useState<Date>(() => new Date());
-    const [dailyLogs, setDailyLogs] = useState<Record<string, DailyLog>>({});
+    const [dailyLogs, _setDailyLogs] = useState<Record<string, DailyLog>>({});
     const [savedFoods, setSavedFoods] = useState<SavedFood[]>([]);
     const [goals, setGoals] = useState<NutritionGoals>(defaultGoals);
 
@@ -63,81 +55,6 @@ export function NutritionProvider({ children }: { children: React.ReactNode }) {
         );
     }, [selectedDate, dailyLogs, goals]);
 
-    const addFoodEntry = useCallback(
-        (entry: FoodEntryDTO) => {
-            const dateStr = getDateString(selectedDate);
-            const newEntry: FoodEntry = {
-                ...entry,
-                id: `${dateStr}-${Date.now()}`,
-                timestamp: new Date(),
-                updatedAt: new Date(),
-                userId: '', // This will be set on the backend, so we can leave it empty here
-            };
-
-            setDailyLogs((prev) => {
-                const currentLog = prev[dateStr] || {
-                    date: dateStr,
-                    entries: [],
-                    calorieGoal: goals.calorieGoal,
-                    proteinGoal: goals.proteinGoal,
-                };
-
-                return {
-                    ...prev,
-                    [dateStr]: {
-                        ...currentLog,
-                        entries: [...currentLog.entries, newEntry],
-                    },
-                };
-            });
-        },
-        [selectedDate, goals],
-    );
-
-    const removeFoodEntry = useCallback(
-        (entryId: string) => {
-            const dateStr = getDateString(selectedDate);
-
-            setDailyLogs((prev) => {
-                const currentLog = prev[dateStr];
-                if (!currentLog) return prev;
-
-                return {
-                    ...prev,
-                    [dateStr]: {
-                        ...currentLog,
-                        entries: currentLog.entries.filter(
-                            (e) => e.id !== entryId,
-                        ),
-                    },
-                };
-            });
-        },
-        [selectedDate],
-    );
-
-    const updateFoodEntry = useCallback(
-        (entryId: string, updates: Partial<FoodEntryDTO>) => {
-            const dateStr = getDateString(selectedDate);
-
-            setDailyLogs((prev) => {
-                const currentLog = prev[dateStr];
-                if (!currentLog) return prev;
-
-                return {
-                    ...prev,
-                    [dateStr]: {
-                        ...currentLog,
-                        entries: currentLog.entries.map((e) =>
-                            e.id === entryId ? { ...e, ...updates } : e,
-                        ),
-                    },
-                };
-            });
-        },
-        [selectedDate],
-    );
-
     const addSavedFood = useCallback((food: Omit<SavedFood, 'id'>) => {
         const newFood: SavedFood = {
             ...food,
@@ -149,22 +66,6 @@ export function NutritionProvider({ children }: { children: React.ReactNode }) {
     const removeSavedFood = useCallback((foodId: string) => {
         setSavedFoods((prev) => prev.filter((f) => f.id !== foodId));
     }, []);
-
-    const addSavedFoodToDay = useCallback(
-        (food: SavedFood, grams: number) => {
-            const calories = Math.round((food.caloriesPer100g * grams) / 100);
-            const protein =
-                Math.round(((food.proteinPer100g * grams) / 100) * 10) / 10;
-
-            addFoodEntry({
-                name: `${food.name} (${grams}g)`,
-                calories,
-                protein,
-                notes: '',
-            });
-        },
-        [addFoodEntry],
-    );
 
     const updateGoals = useCallback((newGoals: NutritionGoals) => {
         setGoals(newGoals);
@@ -257,13 +158,9 @@ export function NutritionProvider({ children }: { children: React.ReactNode }) {
             setSelectedDate,
             dailyLogs,
             getCurrentDayLog,
-            addFoodEntry,
-            removeFoodEntry,
-            updateFoodEntry,
             savedFoods,
             addSavedFood,
             removeSavedFood,
-            addSavedFoodToDay,
             goals,
             updateGoals,
             getTotalCalories,
@@ -275,13 +172,9 @@ export function NutritionProvider({ children }: { children: React.ReactNode }) {
             selectedDate,
             dailyLogs,
             getCurrentDayLog,
-            addFoodEntry,
-            removeFoodEntry,
-            updateFoodEntry,
             savedFoods,
             addSavedFood,
             removeSavedFood,
-            addSavedFoodToDay,
             goals,
             updateGoals,
             getTotalCalories,
