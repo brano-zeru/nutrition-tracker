@@ -8,6 +8,10 @@ export const userBaseSchema = z.object({
     fullName: z.string(),
 });
 
+export const persistedUserSchema = userBaseSchema.extend({
+    id: z.string().uuid(),
+});
+
 export const profileActivityLevel = z.enum(
     [
         'SEDENTARY',

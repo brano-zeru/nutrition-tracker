@@ -2,12 +2,12 @@ import {
     foodLogBaseSchema,
     goalsSchema,
     registerSchema,
-    userBaseSchema,
+    persistedUserSchema,
     userProfileSchema,
 } from '@/lib/validations/schemas';
 import { z } from 'zod';
 
-export type UserDTO = z.infer<typeof userBaseSchema> & { id: string };
+export type UserDTO = z.infer<typeof persistedUserSchema>;
 export type FoodEntryDTO = z.infer<typeof foodLogBaseSchema>;
 export type ProfileDTO = z.infer<typeof userProfileSchema>;
 

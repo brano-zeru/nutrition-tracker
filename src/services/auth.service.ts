@@ -1,6 +1,7 @@
 import bcrypt from 'bcrypt';
 import { prisma } from '../lib/prisma';
 import { RegisterUserDTO, UserDTO } from '@/types/dto';
+import { persistedUserSchema } from '@/lib/validations/schemas';
 
 export class AuthService {
     static async register(data: RegisterUserDTO): Promise<UserDTO | null> {
@@ -39,12 +40,7 @@ export class AuthService {
 
         if (!userResults) return null;
 
-        return {
-            id: userResults.id,
-            email: userResults.email,
-            role: userResults.role,
-            fullName: userResults.fullName,
-        };
+        return persistedUserSchema.parse(userResults);
     }
 
     static async login(
@@ -64,11 +60,6 @@ export class AuthService {
 
         if (!isPasswordValid) return null;
 
-        return {
-            id: userResults.id,
-            email: userResults.email,
-            fullName: userResults.fullName,
-            role: userResults.role,
-        };
+        return persistedUserSchema.parse(userResults);
     }
 }
