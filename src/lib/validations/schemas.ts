@@ -30,7 +30,7 @@ export const goalsSchema = z.object({
 });
 
 export const profileBaseSchema = z.object({
-    age: z.coerce.number().min(13, 'user should be atleast 13'),
+    age: z.coerce.number().min(13, 'user should be at least 13'),
     height: z.coerce.number().min(100, 'invalid height'),
     weight: z.coerce.number().min(30, 'invalid weight'),
     activityLevel: profileActivityLevel,
@@ -92,5 +92,13 @@ export const foodLogsPostRequest = {
 export const getFoodLogByDateRequestSchema = {
     query: z.object({
         date: z.string(),
+    }),
+};
+
+export const getProfileSchema = {};
+
+export const updateProfileSchema = {
+    body: z.object({
+        profile: userProfileSchema.partial(),
     }),
 };

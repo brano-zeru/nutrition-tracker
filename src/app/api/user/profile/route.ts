@@ -1,18 +1,17 @@
-import { USER_ID_HEADER } from '@/consts';
+import { validatedRoute } from '@/lib/validations';
+import {
+    getProfileSchema,
+    updateProfileSchema,
+} from '@/lib/validations/schemas';
 import { UserService } from '@/services/user.service';
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 
-export async function GET(request: NextRequest) {
-    try {
-        const userId = request.headers.get(USER_ID_HEADER);
-
-        if (!userId) {
-            return NextResponse.json(
-                { message: 'user id not provided' },
-                { status: 401 },
-            );
-        }
-
+export const GET = validatedRoute(
+    {
+        schemas: getProfileSchema,
+        authRequired: true,
+    },
+    async (_request, { userId }) => {
         const profile = await UserService.getProfile(userId);
 
         if (!profile) {
@@ -23,48 +22,19 @@ export async function GET(request: NextRequest) {
         }
 
         return NextResponse.json({ profile }, { status: 200 });
-    } catch (error: unknown) {
-        return NextResponse.json(
-            {
-                message:
-                    'unknown error accured when trying to fetch the profile',
-                error: (error as Error).message,
-            },
-            { status: 500 },
-        );
-    }
-}
+    },
+);
 
-export async function PATCH(request: NextRequest) {
-    try {
-        const userId = request.headers.get(USER_ID_HEADER);
-        const { profile } = await request.json();
-
-        if (!userId) {
-            return NextResponse.json(
-                { message: 'user id not provided' },
-                { status: 401 },
-            );
-        }
-
-        if (!profile) {
-            return NextResponse.json(
-                { message: 'profile data to update was not provided' },
-                { status: 400 },
-            );
-        }
+export const PATCH = validatedRoute(
+    {
+        schemas: updateProfileSchema,
+        authRequired: true,
+    },
+    async (_request, { body, userId }) => {
+        const { profile } = body;
 
         const updateProfile = await UserService.updateProfile(userId, profile);
 
         return NextResponse.json({ profile: updateProfile }, { status: 200 });
-    } catch (error: unknown) {
-        console.error('PATCH Profile Error:', error);
-        return NextResponse.json(
-            {
-                message: 'An error occurred while updating the profile',
-                error: (error as Error).message,
-            },
-            { status: 500 },
-        );
-    }
-}
+    },
+);
