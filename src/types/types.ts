@@ -1,4 +1,6 @@
 import { ActivityLevel } from '@prisma/client';
+import { ReactNode } from 'react';
+import { FoodEntryDTO, UserDTO } from './dto';
 
 export interface SavedFood {
     id: string;
@@ -9,7 +11,7 @@ export interface SavedFood {
 
 export interface DailyLog {
     date: string; // YYYY-MM-DD format
-    entries: FoodEntry[];
+    entries: FoodEntryDTO[];
     calorieGoal: number;
     proteinGoal: number;
 }
@@ -19,9 +21,6 @@ export interface NutritionGoals {
     proteinGoal: number;
     weightGoal: number;
 }
-
-import { ReactNode } from 'react';
-import { FoodEntry, UserDTO } from './dto';
 
 export const enum tabKeys {
     DASHBOARD = 'dashboard',

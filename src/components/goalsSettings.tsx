@@ -16,8 +16,8 @@ import {
 } from '@/components/ui/dialog';
 import { FieldGroup, Field, FieldLabel } from '@/components/ui/field';
 import { Settings, Target, Scale, Loader2 } from 'lucide-react';
-import { UserGoals } from '@/types';
 import { useProfile } from '@/hooks/useProfile';
+import { UserGoals } from '@/types/dto';
 
 export function GoalsSettings() {
     const [isOpen, setIsOpen] = useState(false);
