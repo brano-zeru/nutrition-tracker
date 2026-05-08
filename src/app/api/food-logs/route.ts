@@ -5,16 +5,15 @@ import {
     getFoodLogByDateRequestSchema,
 } from '@/lib/validations/schemas';
 import { FoodLogsService } from '@/services/foodLogs.service';
-import { FoodEntryDTO } from '@/types/dto';
 import { NextRequest, NextResponse } from 'next/server';
 
 export const POST = validatedRoute(
-    { schemas: foodLogsPostRequest },
+    {
+        schemas: foodLogsPostRequest,
+        authRequired: true,
+    },
     async (_request: NextRequest, { body, userId }) => {
-        const addedEntry = await FoodLogsService.addFoodLogEntry(
-            body as FoodEntryDTO,
-            userId,
-        );
+        const addedEntry = await FoodLogsService.addFoodLogEntry(body, userId);
         return NextResponse.json(addedEntry, { status: 201 });
     },
 );
