@@ -1,6 +1,7 @@
 import { SignJWT, jwtVerify } from 'jose';
 import { AuthPayload } from '@/types';
 import { appConfig } from '@/config';
+import { NextResponse } from 'next/server';
 
 const SECRET = new TextEncoder().encode(appConfig.jwtAuthSecret);
 
@@ -20,4 +21,19 @@ export async function verifyToken(token: string): Promise<AuthPayload | null> {
         console.error('error: ', JSON.stringify((error as Error).message));
         return null;
     }
+}
+
+export async function setCookies(
+    response: NextResponse,
+    cookies: { identifier: string; cookie: string }[],
+) {
+    cookies.forEach(({ identifier, cookie }) =>
+        response.cookies.set(identifier, cookie, {
+            httpOnly: true,
+            secure: true,
+            sameSite: 'lax',
+            maxAge: 60 * 60 * 2,
+            path: '/',
+        }),
+    );
 }

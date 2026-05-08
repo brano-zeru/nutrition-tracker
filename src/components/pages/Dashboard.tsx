@@ -3,22 +3,13 @@ import { DashboardHeader } from '../dashboardHeader';
 import { DailyProgress } from '../dailyProgress';
 import { FoodLog } from '../foodLog';
 import { useCallback } from 'react';
-import { useNutrition } from '@/contexts/nutritionContext';
 import { WeightMiniCard } from '../WeightMiniCard';
 
 export const Dashboard = () => {
-    const { addFoodEntry } = useNutrition();
-
+    // logic here should be replace entirely
     const handleAIParsedEntry = useCallback(
-        (entries: { name: string; calories: number; protein: number }[]) => {
-            entries.forEach((entry) => {
-                addFoodEntry({
-                    ...entry,
-                    notes: 'none',
-                });
-            });
-        },
-        [addFoodEntry],
+        (_entries: { name: string; calories: number; protein: number }[]) => {},
+        [],
     );
 
     return (

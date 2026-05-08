@@ -68,3 +68,7 @@ export const calculateRecommendedGoals = ({
         weight: idealWeight,
     };
 };
+
+export const isLocal = () => {
+    return process.env.NODE_ENV === 'development';
+};

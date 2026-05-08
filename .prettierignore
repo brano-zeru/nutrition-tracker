@@ -4,3 +4,6 @@ build
 coverage
 .ds_store
 next-env.d.ts
+eslint.*
+*.yaml
+*.yml

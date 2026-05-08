@@ -2,6 +2,7 @@ import { prisma } from '@/lib/prisma';
 import { FoodEntryDTO, UserDTO } from '@/types/dto';
 import { fromZonedTime } from 'date-fns-tz';
 import { FoodLog as FoodEntry } from '@prisma/client';
+import { foodLogBaseSchema } from '@/lib/validations/schemas';
 
 export class FoodLogsService {
     static async addFoodLogEntry(
@@ -16,15 +17,9 @@ export class FoodLogsService {
                 name: entry.name,
                 userId,
             },
-            select: {
-                calories: true,
-                protein: true,
-                notes: true,
-                name: true,
-            },
         });
 
-        return newEntry;
+        return foodLogBaseSchema.parse(newEntry);
     }
 
     static async getFoodLogsByDate(

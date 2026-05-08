@@ -13,6 +13,7 @@ import * as z from 'zod';
 import { Button } from '@/components/ui/button';
 import { useEffect } from 'react';
 import { FancyDropdown } from '../FancyDropdown';
+import { useLocalEffect } from '@/hooks/useLocalEffect';
 
 interface FormField<T> {
     name: Path<T>;
@@ -81,6 +82,8 @@ export function GenericForm<TFieldValues extends FieldValues>({
 
     const isBlocked = isSubmitting || isExternalLoading;
     const hasClientErrors = Object.keys(errors).length > 0;
+
+    useLocalEffect(() => console.log('errors: ', errors), [errors]);
 
     return (
         <div className="w-full max-w-md space-y-6 rounded-2xl bg-zinc-900 border border-zinc-800 p-8 shadow-2xl shadow-emerald-900/20 font-sans text-zinc-100">

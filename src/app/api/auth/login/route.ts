@@ -1,18 +1,16 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { AuthService } from '@/services/auth.service';
-import { signToken } from '@/lib/auth';
+import { setCookies, signToken } from '@/lib/auth';
 import { AUTH_COOKIE_NAME } from '@/consts';
+import { validatedRoute } from '@/lib/validations';
+import { loginRequestSchema } from '@/lib/validations/schemas';
 
-export async function POST(request: NextRequest) {
-    try {
-        const { email, password } = await request.json();
-
-        if (!email || !password) {
-            return NextResponse.json(
-                { error: 'Missing required fields' },
-                { status: 400 },
-            );
-        }
+export const POST = validatedRoute(
+    {
+        schemas: loginRequestSchema,
+    },
+    async (_request, { body }) => {
+        const { email, password } = body;
 
         const user = await AuthService.login(email, password);
 
@@ -35,19 +33,8 @@ export async function POST(request: NextRequest) {
             { status: 200 },
         );
 
-        response.cookies.set(AUTH_COOKIE_NAME, token, {
-            httpOnly: true,
-            secure: true,
-            sameSite: 'lax',
-            maxAge: 60 * 60 * 2,
-            path: '/',
-        });
+        setCookies(response, [{ identifier: AUTH_COOKIE_NAME, cookie: token }]);
 
         return response;
-    } catch (error: unknown) {
-        return NextResponse.json(
-            { error: (error as Error).message || 'Internal Server Error' },
-            { status: 500 },
-        );
-    }
-}
+    },
+);
